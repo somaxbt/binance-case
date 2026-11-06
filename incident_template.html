@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eagle Eye — Binance Hack Fund Flow</title>
+<script>/*__ECHARTS__*/</script>
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#1d1d1f;--mute:#6b6b70;--line:#e3e3e0;--acc:#2f6fdb;--warn:#c2410c;--bad:#b91c1c;--ok:#15803d}
+:root{color-scheme:light dark}:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark;--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.topbar{padding:6px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--mute);border-bottom:1px solid var(--line)}header{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+h1{font-size:22px;margin:0}.sub{color:var(--mute);font-size:12px}h3{font-size:14px;margin:6px 0 8px}
+.chains{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line)}
+.chains button{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:5px 11px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.chains button.on{border-color:var(--ink);font-weight:700}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+nav{display:flex;gap:4px;padding:8px 18px;border-bottom:1px solid var(--line)}nav button{background:none;border:1px solid transparent;color:var(--ink);padding:6px 12px;border-radius:6px;cursor:pointer;font:inherit}
+nav button.on{background:var(--panel);border-color:var(--line);font-weight:600}nav[hidden]{display:none}
+section{display:none;padding:14px 18px}section.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}.kpi b{display:block;font-size:18px}.kpi span{color:var(--mute);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:14px}.card[hidden]{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:14px}
+.cc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer}.cc:hover{border-color:var(--mute)}
+.cc h4{margin:0 0 6px;font-size:14px;display:flex;justify-content:space-between;align-items:center}.cc .r{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute)}.cc .r b{color:var(--ink);font-weight:600}
+.chip{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;color:#fff}
+.row{display:flex;gap:14px}.grow{flex:1;min-width:0}
+#netc{height:calc(100vh - 200px);min-height:420px}#sidewrap{width:430px;max-height:calc(100vh - 250px);overflow:auto}#sidewrap[hidden]{display:none}
+.chart{position:relative;padding-bottom:104px}
+.hgtitle{position:absolute;top:12px;left:18px;z-index:3}.hgtitle b{font-size:16px}.hgtitle div{font-size:12px;color:var(--mute)}
+.htbl{display:flex;gap:28px;flex-wrap:wrap}.htbl table{border-collapse:collapse;font-size:12.5px}.htbl th,.htbl td{padding:4px 10px;border-bottom:1px solid var(--line);text-align:left}.htbl td.n,.htbl th.n{text-align:right;font-variant-numeric:tabular-nums}.htbl h3{font-size:14px;margin:0 0 6px}.htbl i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.morebox{position:absolute;right:16px;top:46px;z-index:6;width:min(700px,60%);max-height:64%;overflow:auto;background:var(--bg,#fff);border:1px solid var(--line,#ddd);border-radius:8px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:12px}
+.morebox td,.morebox th{padding:2px 6px;white-space:nowrap}
+.asof{position:absolute;left:18px;bottom:14px;z-index:3;font-size:11px;line-height:1.4;color:var(--muted,#777);max-width:52%}
+.asof b{color:var(--ink)}
+.asof ul.howto{list-style:none;margin:0 0 4px;padding:0}
+.asof ul.howto li{padding-left:10px;text-indent:-10px;margin-bottom:1px}
+.asof ul.howto li::before{content:'* ';color:var(--ink);font-weight:700}
+.nettitle{position:absolute;top:12px;left:18px;z-index:3;max-width:50%}
+.netleg{top:10px;right:16px;left:auto;bottom:auto;max-width:430px;background:var(--bg,#fff);opacity:.95;padding:4px 6px;border-radius:6px}
+.netleg .legend{justify-content:flex-end}
+#net .ctl .netmore{display:none}
+#net .ctl.showmore .netmore{display:inline-flex}
+.asof .legend{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:11px;color:var(--ink)}
+.asof .legend span{display:inline-flex;align-items:center;gap:4px}
+.asof .legend i{display:inline-block;width:9px;height:9px;border-radius:50%}.credit{position:absolute;right:18px;bottom:14px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);text-decoration:none}.credit .av{width:60px;height:60px;border-radius:12px;object-fit:cover;image-rendering:pixelated;display:block}.credit .h{display:flex;align-items:center;gap:5px;font-weight:700;font-size:13px;letter-spacing:.1px;line-height:1}.credit .xl{width:12px;height:12px;fill:currentColor}
+.wdet{position:relative}.wdet summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;background:var(--panel)}.wdet summary::-webkit-details-marker{display:none}.wdet summary::after{content:' ▾'}.wpop{position:absolute;z-index:5;top:110%;left:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:280px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.x{float:right;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:2px 8px;cursor:pointer}#side table{font-size:11.5px}#side td,#side th{padding:4px 5px}
+.ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:13px}
+.ctl input[type=text]{width:330px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+select,input{font:inherit}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600;position:sticky;top:0;background:var(--panel)}td.n{text-align:right;font-variant-numeric:tabular-nums}
+code,.addr{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all}a{color:var(--acc)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mute)}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.note{color:var(--mute);font-size:12px}
+@media (max-width:900px){.row{flex-direction:column}#sidewrap{width:auto;max-height:none}.ctl input[type=text]{width:100%}}
+</style></head><body>
+<div class="topbar"><label>theme <select id="theme"><option value="auto">auto</option><option value="light">light</option><option value="dark">dark</option></select></label><span id="built"></span></div>
+<header><h1>Binance Hack — Fund Flow</h1><div class="sub" style="margin-top:4px">Built from raw on-chain data, indexed independently; cross-chain hops cross-checked against bridge records. All figures in native units; USD at theft-time prices, for scale only. Each chain shows its own &quot;as of&quot; time.</div></header>
+<div class="chains" id="chains"></div>
+<nav id="tabs" hidden><button data-t="flow" class="on">Flow</button><button data-t="net">Network</button><button data-t="exits">Exits</button><button data-t="txs">Txs</button><button data-t="wallets">Wallets</button><button data-t="acct">Accounting</button></nav>
+<section id="all" class="on"><div class="kpis" id="okpis"></div>
+  <div class="card chart"><div id="osankey" style="height:560px"></div>/*CREDIT*/</div>
+  <h3>Chains</h3><div class="grid" id="ocards"></div>
+  <h3>Cross-chain hops</h3><div class="card" style="max-height:44vh;overflow:auto"><table id="ohops"></table></div></section>
+<section id="hold"><div class="card chart"><div id="hg" style="height:600px"></div><div class="hgtitle"><b>Binance Hack — where the funds are now, all chains</b><div id="hsub"></div></div><div class="asof" id="hasof"></div>/*CREDIT*/</div>
+  <div class="htbl" id="htbl"></div></section>
+<section id="flow"><div class="kpis" id="kpis"></div><div class="note" id="cnote" style="margin:-6px 0 10px"></div>
+  <div class="card chart"><div id="sankey" style="height:520px"></div>/*CREDIT*/</div>
+  <div class="card chart" id="barscard"><div id="bars" style="height:340px"></div>/*CREDIT*/</div></section>
+<section id="net"><div class="ctl">
+  <label>Show wallets moving ≥ <select id="thr"><option value="0">all</option><option value="10000">$10k</option><option value="50000">$50k</option><option value="250000" selected>$250k</option><option value="1000000">$1M</option></select></label>
+  <details id="wdet" class="wdet"><summary id="wsum">windows: all</summary><div class="wpop"><div id="wsel"></div><div id="wleg" class="legend" style="margin-top:6px"></div></div></details>
+  <label>layout <select id="lay"><option value="flow" selected>flow (left → right)</option><option value="force">force</option></select></label> <label><input type="checkbox" id="showin"> outside inflows</label> <label><input type="checkbox" id="showswap"> swap churn</label>
+  <input type="text" id="find" placeholder="find address">
+  <span class="note" id="netstat"></span></div>
+  <div class="legend" id="legend"></div>
+  <div class="row"><div class="grow card chart"><div id="netc"></div>/*CREDIT*/</div><div id="sidewrap" class="card" hidden><button class="x" id="sclose">✕ hide</button><div id="side"></div></div></div></section>
+<section id="exits"><div class="ctl"><label>Category <select id="cat"></select></label><span class="note" id="exstat"></span></div>
+  <div class="card" style="max-height:52vh;overflow:auto"><table id="extab"></table></div>
+  <div id="paywrap"><h3>THORChain payouts</h3><div class="card" style="max-height:40vh;overflow:auto"><table id="paytab"></table></div></div></section>
+<section id="txs"><div class="ctl"><input type="text" id="tq" placeholder="address (from or to) or tx hash"><label>type <select id="tc"></select></label><label>window <select id="tw"></select></label>
+  <label>min $ <select id="tm"><option value="0">any</option><option value="1000">1k</option><option value="10000">10k</option><option value="100000" selected>100k</option><option value="1000000">1M</option></select></label>
+  <label>sort <select id="tsort"><option value="t">time</option><option value="v">amount</option></select></label><span class="note" id="tstat"></span></div>
+  <div class="card" style="max-height:68vh;overflow:auto"><table id="ttab"></table></div><div class="ctl" id="tpg"></div></section>
+<section id="acct"><div class="note" id="acctnote" style="margin-bottom:8px"></div><div style="overflow:auto"><table id="accttab"></table></div></section>
+<section id="wallets"><div class="ctl"><input type="text" id="wq" placeholder="search address or label"><label>type <select id="wt"><option value="">all</option><option>operator</option><option>exit</option><option>outside</option><option>service</option><option>source</option><option>counterparty</option></select></label>
+  <label>sort <select id="wsort"><option value="m">moved $</option><option value="h">held $</option><option value="n">txs</option><option value="c">created</option></select></label><span class="note" id="wstat"></span></div>
+  <div class="row"><div class="grow card" style="max-height:70vh;overflow:auto"><table id="wtab"></table></div><div id="wside" class="card" style="width:460px;max-height:70vh;overflow:auto"><div class="note">Click a row for details.</div></div></div><div class="ctl" id="wpg"></div></section>
+<script>
+const D=/*__DATA__*/null; let net=null, curNodes=[], CH=null, cur='all', tab='flow';
+const setTheme=t=>{if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)};
+let theme='auto';try{theme=localStorage.getItem('fundflow-theme')||'auto'}catch(e){}setTheme(theme);
+const $=s=>document.querySelector(s), fmt=(v,d=0)=>Number(v).toLocaleString('en-US',{maximumFractionDigits:d}), usd=v=>'$'+(Math.abs(v)>=1e9?fmt(v/1e9,2)+'B':Math.abs(v)>=1e6?fmt(v/1e6,2)+'M':Math.abs(v)>=1e3?fmt(v/1e3,1)+'k':fmt(v,0));
+const short_=v=>Math.abs(v)>=1e9?fmt(v/1e9,2)+'B':Math.abs(v)>=1e6?fmt(v/1e6,2)+'M':Math.abs(v)>=1e3?fmt(v/1e3,1)+'k':fmt(v,4);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const px=a=>(CH&&CH.px[a]!=null?CH.px[a]:(D.px[a]||0)), am=o=>{const e=Object.entries(o||{}).filter(([k,v])=>v&&(!px(k)||v*px(k)>=1)).sort((x,y)=>y[1]*px(y[0])-x[1]*px(x[0]));
+  return (e.slice(0,3).map(([k,v])=>`${short_(v)} ${k}`).join(' · ')+(e.length>3?` · +${e.length-3} more`:''))||'—'};   // amounts under $1 (dust) are left out
+const aL=a=>`<a class="addr" target="_blank" href="${CH.addr_url.replace('{}',a)}">${a}</a>`, txl=h=>h?`<a class="addr" target="_blank" href="${CH.tx_url.replace('{}',h)}">${h.slice(0,10)}…</a>`:'';
+$('#built').textContent=`built ${D.built}`;
+// ---------- colour (validated categorical palette per mode; one warm neutral family) ----------
+const isDark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches};
+function excFor(){const d=isDark(),S=d?['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#9085e9','#e66767']:['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948'];
+  const STRUCT=d?'#c3c2b7':'#52514e', OTHER=d?'#7d7c75':'#a3a29b', RESID=d?'#4a4944':'#d6d5ce';
+  const RELAY=d?'#2bb3d9':'#0b9ec4';
+  return {'Relay':RELAY,'Frozen':S[0],'Frozen / seized':S[0],'Recovered':S[0],'THORChain':S[1],'Bridged out':S[1],'Chainflip':S[2],'USDT0 bridge':S[3],'JustLend':S[4],'DeFi (Aave)':S[4],'Symbiosis':S[5],'Bridges':S[5],
+          'Still held':S[6],'Bitget Wallet Swap Bridge':S[7],'CCTP (Circle)':S[2],'Layerswap':S[4],'Unidentified services':OTHER,'Swaps (output to be traced)':OTHER,'OKX (exchange)':OTHER,'Burned / seized':S[0],'ChangeHero':OTHER,'Bridgers':OTHER,'External wallets':OTHER,'Other contracts':OTHER,'Other':OTHER,'Services':OTHER,
+          'Swaps (churn)':OTHER,'Other exits':OTHER,STRUCT,OTHER,RESID,S}}
+let EXC=excFor();
+const ROLEMAP=()=>{const E=EXC;return {'theft wallet':E.S[7],'theft 2nd hop (sold USDT)':E.S[7],'theft collection wallet':E.S[7],'theft collection wallet (late sweeps)':E.S[7],'operator':E.S[7],'collection wallet':E.S[7],
+  'frozen':E.S[0],'pot (TRX bought with stolen USDT)':E.S[6],'tranche':E.S[6],'holding wallet':E.S[6],'holding wallet (AVAX proceeds)':E.S[6],'holding output':E.S[6],
+  'distribution wallet':E.S[4],'consolidation (THORChain)':E.S[1],'collection point':E.S[3],'Aave position':E.S[4],'seller':E.S[3],'Relay hop':E.Relay,'service deposit address':E.OTHER,'layering':E.OTHER,'peel hop':E.OTHER}};
+let ROLEC=ROLEMAP();
+const STC=s=>({laundering:EXC.S[7],moving:EXC.S[3],unmoved:EXC.S[2],'no ledger':EXC.OTHER}[s]||EXC.OTHER);
+const credit=document.querySelector('template#cr');
+// ---------- chain switcher ----------
+function chainBar(){$('#chains').innerHTML=`<button data-c="all" class="${cur==='all'?'on':''}">All chains</button><button data-c="hold" class="${cur==='hold'?'on':''}">Where it is now</button>`+D.order.map(c=>{const o=D.overview.chains.find(x=>x.id===c);
+  return `<button data-c="${c}" class="${cur===c?'on':''}"><span class="dot" style="background:${STC(o.status)}"></span>${D.chains[c].name}</button>`}).join('');
+  $('#chains').querySelectorAll('button').forEach(b=>b.onclick=()=>setChain(b.dataset.c))}
+function show(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');window.dispatchEvent(new Event('resize'))}
+function setChain(c){cur=c;chainBar();if(c==='all'){$('#tabs').hidden=true;show('all');drawAll();return}
+  if(c==='hold'){$('#tabs').hidden=true;$('#sidewrap').hidden=true;show('hold');drawHold();return}
+  CH=D.chains[c];W=Object.fromEntries(CH.wallets.map(w=>[w.id,w]));A=CH.addr;LBL={};CH.wl.forEach(r=>LBL[A[r[0]]]=r[1]);
+  wins.clear();CH.windows.forEach((_,i)=>wins.add(i));$('#tabs').hidden=false;if(net){net.dispose();net=null}$('#sidewrap').hidden=true;
+  initChain();setTab(tab)}
+function setTab(t){tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));show(t);if(t==='flow')drawFlow();if(t==='net')drawNet();if(t==='exits')exitsTab();if(t==='txs')txTab();if(t==='wallets')wlTab();if(t==='acct')acctTab()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+// ---------- WHERE IT IS NOW (all-chains holders network, 11-05) ----------
+function drawHold(){const H=D.holders, el=$('#hg');if(!H){$('#hsub').textContent='no data';return}
+  el.style.height=Math.max(460,window.innerHeight-(el.getBoundingClientRect().top+scrollY)-104-14)+'px';   // fit one screen under the header (asof box sits in the 104px card padding)const c0=echarts.getInstanceByDom(el);if(c0)c0.dispose();
+// categorical slots in fixed order (validated light + dark); services/pools/outside are neutrals + their own shape
+const CAT=['Ethereum','Bitcoin','Tron','XRP Ledger','Solana','NEAR','Other EVM chains','Bridge / swap service','Privacy pool (untraceable)','Outside these ledgers'];
+const COL=isDark()?['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#9085e9','#a7abb4','#ececee','#66666d']
+              :['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#7d8189','#1d1d1f','#b5b3ad'];
+const ci=c=>CAT.indexOf(c), fmt=n=>Math.round(n).toLocaleString('en-US');
+const usd=u=>u>=1e9?'$'+(u/1e9).toFixed(2)+'B':u>=1e6?'$'+(u/1e6).toFixed(2)+'M':u>=1e3?'$'+(u/1e3).toFixed(1)+'k':'$'+u.toFixed(0);
+const amt=o=>Object.entries(o||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${v>=100?fmt(v):(+v.toPrecision(4)).toLocaleString('en-US')} ${k}`).join(' + ');
+const sz=u=>Math.min(36,4+2.2*Math.sqrt(u/1e6));
+const nodes=H.nodes.map(n=>{const o={id:n.id,category:ci(n.cat),_n:n,name:n.name||''};
+  if(n.k==='w'){o.symbolSize=sz(n.usd);o.label={show:false};if(n.frozen)o.itemStyle={borderColor:css('--ink'),borderWidth:1.5}}
+  else if(n.k==='c'){o.symbolSize=Math.min(56,16+2.4*Math.sqrt(n.usd/1e6));o.name=n.n?`${n.name}\n${fmt(n.n)} wallet${n.n>1?'s':''} · ${usd(n.usd)}`:`${n.name}\nno wallet holds $1k+`;o.label={show:true,fontWeight:700,fontSize:12};o.itemStyle={borderColor:css('--bg'),borderWidth:2}}
+  else if(n.k==='b'){o.symbol='roundRect';o.symbolSize=Math.min(34,10+2*Math.sqrt(n.usd/1e6));o.label={show:true,fontSize:11}}
+  else if(n.k==='p'){o.symbol='triangle';o.symbolSize=26;o.name=`${n.name}\nentered · untraceable now\n${amt(n.am)}`;o.label={show:true,fontSize:11,fontWeight:600,position:'bottom',align:'center'}}
+  else{o.symbol='roundRect';o.symbolSize=14;o.label={show:true,fontSize:11,color:css('--mute')}}
+  if(o.label&&!o.label.color)o.label.color=css('--ink');o.label&&!o.label.position&&(o.label.position=n.k==='c'?'bottom':'right');return o});
+const N=Object.fromEntries(H.nodes.map(n=>[n.id,n])), mx=Math.max(...H.links.filter(l=>l.usd).map(l=>l.usd));
+const links=H.links.map(l=>({source:l.s,target:l.t,_l:l,
+  lineStyle:l.k==='m'?{width:.5,opacity:.25,color:COL[ci(N[l.s].cat)]}
+           :{width:Math.max(1,7*Math.sqrt(l.usd/mx)),opacity:.75,curveness:.12,type:l.k==='p'?'dashed':'solid',color:l.k==='p'?COL[8]:COL[ci(N[l.t].k==='c'?N[l.t].cat:N[l.s].cat)]},
+  symbol:l.k==='m'?['none','none']:['none','arrow'],symbolSize:7}));
+// fixed layout (fits the screen, same every time): chains on an ellipse, wallets in a sunflower around their chain (largest nearest),
+// bridges inside the ring between the chains they join, privacy pools just outside their chain, outside destinations next to their bridge
+(()=>{const ANG={eth:180,xrp:135,tron:90,near:45,btc:0,bsc:330,arb:310,base:290,sol:270,avax:250,opt:230,polygon:210}, K=6, RX=780, RY=390;
+  const by=id=>nodes.find(n=>n.id===id), P={}, mem={};
+  nodes.forEach(n=>{if(n._n.k==='w'){const h='C:'+n.id.split(':')[0];(mem[h]=mem[h]||[]).push(n)}});
+  nodes.filter(n=>n._n.k==='c').forEach(n=>{const a=(ANG[n.id.slice(2)]??0)*Math.PI/180;n.x=RX*Math.cos(a);n.y=-RY*Math.sin(a);P[n.id]=[n.x,n.y];
+    const ws=(mem[n.id]||[]).sort((p,q)=>q._n.usd-p._n.usd);n._r=K*Math.sqrt(ws.length)+34;
+    ws.forEach((w,i)=>{const r=30+K*Math.sqrt(i+1),t=i*2.39996;w.x=n.x+r*Math.cos(t);w.y=n.y+r*Math.sin(t)})});
+  const adj={};H.links.forEach(l=>{if(l.k==='h'){(adj[l.s]=adj[l.s]||[]).push([l.t,l.usd]);(adj[l.t]=adj[l.t]||[]).push([l.s,l.usd])}});
+  const placed=[],spot=(x0,y0)=>{let x=x0,y=y0;for(let k=0;k<400;k++){x=x0+14*Math.sqrt(k)*Math.cos(k*2.4)*1.6;y=y0+14*Math.sqrt(k)*Math.sin(k*2.4);if(!placed.some(([a,b])=>Math.hypot((a-x)/1.6,b-y)<70))break}placed.push([x,y]);return [x,y]};
+  nodes.filter(n=>n._n.k==='b').forEach(n=>{let x=0,y=0,w=0;(adj[n.id]||[]).forEach(([o,u])=>{if(P[o]){const k=Math.sqrt(u)+1;x+=P[o][0]*k;y+=P[o][1]*k;w+=k}});
+    [x,y]=spot(w?x/w*.6:0,w?y/w*.6:0);n.x=x;n.y=y;P[n.id]=[x,y]});
+  nodes.filter(n=>n._n.k==='x').forEach(n=>{const b=(adj[n.id]||[])[0],q=b&&P[b[0]]||[0,0];[n.x,n.y]=spot(q[0],q[1]+40);P[n.id]=[n.x,n.y]});
+  const pg={};nodes.filter(n=>n._n.k==='p').forEach(n=>{const c=n.id.split(':')[1];(pg[c]=pg[c]||[]).push(n)});
+  Object.entries(pg).forEach(([c,ps])=>{const h=by('C:'+c),d=Math.hypot(h.x,h.y)||1,ux=h.x/d,uy=h.y/d,o=h._r+70;
+    ps.forEach((n,i)=>{const s=(i-(ps.length-1)/2)*330;n.x=h.x+ux*o-uy*s;n.y=h.y+uy*o+ux*s*.5})});
+})();
+$('#hsub').textContent=`${fmt(H.n)} attacker wallets holding $1k or more · ${usd(H.usd)} held (incl. frozen) · as of ${H.asof}`;
+$('#hasof').innerHTML=`<b>How to read:</b> big dots are chains, small dots are attacker wallets on that chain (bigger = holds more, ringed = frozen). Squares are bridges and swap services; arrows show money moving between chains. Triangles are privacy pools: funds that went in can no longer be followed. Click a legend item to hide it. &nbsp;<b style="color:var(--ink)">•</b>&nbsp; Amounts in native units; USD at theft-time prices &nbsp;<b style="color:var(--ink)">•</b>&nbsp; Built from raw on-chain data`;
+const ch=echarts.init(el,null,{renderer:'canvas'});
+ch.setOption({backgroundColor:'transparent',color:COL,textStyle:{fontFamily:getComputedStyle(document.body).fontFamily},
+  legend:{data:CAT.filter(c=>H.nodes.some(n=>n.cat===c)),top:12,right:18,orient:'vertical',textStyle:{color:css('--ink'),fontSize:11},itemWidth:10,itemHeight:10,icon:'circle'},
+  tooltip:{confine:true,formatter:p=>{if(p.dataType==='edge'){const l=p.data._l;return l.k==='m'?'':`${N[l.s].name||N[l.s].chain} → ${N[l.t].name||''}<br>${amt(l.am)}<br>${usd(l.usd)}`}
+    const n=p.data._n;
+    if(n.k==='w')return `<b>${n.chain}</b> · ${n.role}${n.frozen?' · frozen':''}${n.fbi?' · FBI-listed':''}<br>${n.addr}<br>holds ${amt(n.held)}<br>${usd(n.usd)}`;
+    if(n.k==='c')return `<b>${n.name}</b><br>${fmt(n.n)} wallets holding $1k+<br>${usd(n.usd)} held`;
+    if(n.k==='b')return `<b>${n.name}</b><br>`+n.routes.map(r=>`${r[0]} → ${r[1]}: ${amt({[r[2]]:r[3]})}`).join('<br>');
+    if(n.k==='p')return `<b>${n.name}</b> (${n.chain})<br>entered: ${amt(n.am)} · ${usd(n.usd)}<br>can't be followed out`;
+    return `<b>${n.name}</b>`}},
+  series:[{type:'graph',layout:'none',top:70,bottom:62,left:110,right:230,roam:true,draggable:true,data:nodes,links,categories:CAT.map((c,i)=>({name:c,symbol:i===7||i===9?'roundRect':i===8?'triangle':'circle'})),
+    emphasis:{focus:'adjacency',lineStyle:{width:3}},labelLayout:{hideOverlap:true},lineStyle:{color:'source'}}]});
+ch.on('click',p=>{if(p.dataType==='node'&&p.data._n.url)window.open(p.data._n.url,'_blank','noopener')});
+// table view (identity is never colour-only)
+const ro=(c,i)=>`<i style="background:${COL[ci(c)]}"></i>`;
+$('#htbl').innerHTML=
+ `<div><h3>Wallets holding $1k or more, per chain</h3><table><tr><th>chain</th><th class="n">wallets</th><th class="n">held</th></tr>${H.chains.filter(c=>c[2]).map(c=>`<tr><td>${ro(c[1])}${c[0]}</td><td class="n">${fmt(c[2])}</td><td class="n">${usd(c[3])}</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${fmt(H.n)}</b></td><td class="n"><b>${usd(H.usd)}</b></td></tr></table></div>`+
+ `<div><h3>Bridges between chains</h3><table><tr><th>service</th><th>from → to</th><th class="n">amount</th><th class="n">USD</th></tr>${H.nodes.filter(n=>n.k==='b').sort((a,b)=>b.usd-a.usd).flatMap(n=>n.routes.sort((a,b)=>b[4]-a[4]).map((r,i)=>`<tr><td>${i?'':n.name}</td><td>${r[0]} → ${r[1]}</td><td class="n">${amt({[r[2]]:r[3]})}</td><td class="n">${usd(r[4])}</td></tr>`)).join('')}</table></div>`+
+ `<div><h3>Privacy pools — entered, untraceable now</h3><table><tr><th>chain</th><th>pool</th><th class="n">amount</th><th class="n">USD</th></tr>${H.pools.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td><td class="n">${amt(p[2])}</td><td class="n">${usd(p[3])}</td></tr>`).join('')}</table></div>`;}
+addEventListener('resize',()=>{const c=echarts.getInstanceByDom($('#hg'));if(c)c.resize()});
+// ---------- ALL CHAINS ----------
+const BRIDGE={'THORChain':1,'Chainflip':1,'USDT0 bridge':1,'Symbiosis':1,'Bitget Wallet Swap Bridge':1,'Bridges':1,'Bridgers':1,'Relay':1};
+function drawAll(){const O=D.overview, C=O.chains, sum=k=>C.reduce((a,c)=>a+(c[k]||0),0), ex=c=>Object.values(c.exited).reduce((a,b)=>a+b,0);
+  $('#okpis').innerHTML=[[usd(sum('stolen')),`stolen across ${C.length} chains`],[usd(sum('frozen')),'frozen / seized by issuers'],[usd(sum('recovered')),'recovered (Arbitrum Security Council)'],
+   [usd(sum('held')),'still held by the attacker / launderer'],[usd(C.reduce((a,c)=>a+ex(c),0)),'left via bridges, services and other exits'],
+   [C.filter(c=>c.status==='laundering'||c.status==='moving').length+' of '+C.length,'chains with movement']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  const c0=echarts.getInstanceByDom($('#osankey'));if(c0)c0.dispose();
+  const dk=isDark(),K={stolen:dk?'#3987e5':'#2a78d6',frozen:dk?'#a7abb4':'#3a3f47',held:dk?'#199e70':'#1baf7a',moved:dk?'#c4302f':'#c92a2a',open:dk?'#66666d':'#b5b3ad',lost:dk?'#6b5d50':'#cdbba6'};
+  const G=Object.fromEntries(C.map(c=>[c.id,c])),PX=D.px||{},ST=['USDT','USDC','DAI','USDt'],nf=v=>v>=1e6?(v/1e6).toFixed(2)+'M':v>=1000?Math.round(v).toLocaleString('en-US'):v>=1?v.toFixed(2):v.toFixed(4);
+  const L={},NAT={},add=(s,t,v)=>{if(v>0)L[s+'\u0001'+t]=(L[s+'\u0001'+t]||0)+v},nat=(n,a,v)=>{(NAT[n]=NAT[n]||{})[a]=(NAT[n][a]||0)+v};
+  const M1='Frozen or recovered',M2='Swapped for ETH on DEXs and Aave',M3='Swapped and bridged to other chains',M4='Sent to services and other wallets',M5='Not moved';
+  const R={frz:'Frozen by asset issuers',rec:'Recovered (Arbitrum Security Council)',eth:'Held as ETH',aave:'Left in Aave (net)',lost:'Lost to swap slippage, fees and price moves',toeth:'Moved to Ethereum',svc:'Exchanges and services',wal:'Other wallets, not yet traced',unr:'Bridges not yet resolved',
+           tobtc:'Moved to Bitcoin',perp:'Perp exchange accounts (dYdX, Lighter)',chn:'Other chains',btc:'Held as BTC',xrp:'Held as XRP',sol:'Held as SOL',near:'Held as NEAR',oth:'Held as TRX, POL and OP'};
+  const LN={eth_tok:'Ethereum tokens',tron:'Tron',arb:'Arbitrum',avax:'Avalanche',small:'Polygon, Optimism, Base',eth_nat:'Ethereum ETH',btc:'Bitcoin',xrp:'XRP Ledger',sol:'Solana',near:'NEAR'};
+  const SM=['polygon','opt','base'],ethN=((D.chains.eth||{}).stolen||{}).ETH||0,ethNU=ethN*(PX.ETH||0),S={eth_tok:G.eth.stolen-ethNU,eth_nat:ethNU,small:SM.reduce((a,k)=>a+(G[k]?G[k].stolen:0),0)};
+  ['tron','arb','avax','btc','xrp','sol','near'].forEach(k=>S[k]=G[k]?G[k].stolen:0);
+  const P=a=>({USDT0:1,'USDC (Perp)':1}[a]??PX[a]??(/^USD/.test(a)?1:0)),NX={};
+  const HP={};O.hops.forEach(h=>{(HP[h.from+'|'+h.via]=HP[h.from+'|'+h.via]||[]).push(h)});
+  const avaxETH=((HP['Avalanche|ParaSwap → CCTP v2']||[])[0]||{}).amount||0;
+  // Ethereum (ledger eth-20261030T143938): held ETH = stolen ETH + ETH bought with stolen tokens (incl. ETH borrowed on Aave) + Avalanche proceeds
+  const AAVE_USDT=60002224, AAVE_DEBT_ETH=19762.72, BASE_ETH=1186.83;             // Aave: aEthUSDT collateral vs WETH debt (0x8d539036…) · Base VIRTUAL sold → ETH (0x11861b31)
+  {const e=G.eth,heldE=(e.held_native||{}).ETH||0,swE=heldE-ethN-avaxETH,sw=S.eth_tok-e.frozen,aav=AAVE_USDT*P('USDT')-AAVE_DEBT_ETH*PX.ETH;
+   add(LN.eth_tok,M1,e.frozen);add(M1,R.frz,e.frozen);add(LN.eth_tok,M2,sw);add(M2,R.eth,swE*PX.ETH);add(M2,R.aave,aav);add(M2,R.lost,sw-swE*PX.ETH-aav);
+   add(LN.eth_nat,M5,ethNU);add(M5,R.eth,ethNU);nat(R.eth,'ETH',heldE);
+   NX[R.aave]=`${nf(AAVE_USDT)} USDT collateral − ${nf(AAVE_DEBT_ETH)} ETH borrowed`}
+  [['btc',R.btc],['xrp',R.xrp],['sol',R.sol],['near',R.near],['tron',R.oth],['polygon',R.oth],['opt',R.oth]].forEach(([k,r])=>{const c=G[k];if(!c)return;const s=SM.includes(k)?LN.small:LN[k];add(s,M5,c.held);add(M5,r,c.held);
+    Object.entries(c.held_native||{}).forEach(([a,v])=>{if(['BTC','XRP','SOL','NEAR','TRX','POL','OP'].includes(a))nat(r,a,v)})});
+  ['tron','avax','polygon'].forEach(k=>{const c=G[k];if(!c)return;const s=SM.includes(k)?LN.small:LN[k];add(s,M1,c.frozen);add(M1,R.frz,c.frozen)});
+  if(G.arb){add(LN.arb,M1,G.arb.recovered);add(M1,R.rec,G.arb.recovered);NX[R.rec]=Object.entries(D.chains.arb.stolen).map(([a,v])=>nf(v)+' '+a).join(' + ')}
+  const dst=(ch,a)=>/dYdX|Lighter/.test(ch)||a==='USDC (Perp)'?R.perp:/^(ETH|Ethereum)$/.test(ch)?R.toeth:/^(BTC|Bitcoin)$/.test(ch)?R.tobtc:R.chn;
+  const unr={};
+  {const T=(D.chains.tron.accounting||{}).routes||{},s=LN.tron;let used=0;                                  // Tron: per route, net of refunds; arrivals at theft-time prices
+   Object.entries(T).forEach(([via,r])=>{const net=Object.entries(r.sent||{}).reduce((a,[k,v])=>a+(v-((r.refunded||{})[k]||0))*P(k),0);if(net<=0)return;used+=net;
+     const rec=r.received||[],hib=Object.entries(r.held_in_bridge||{}).reduce((a,[k,v])=>a+v*P(k),0);
+     if(rec.length){add(s,M3,net);let got=0;rec.forEach(([ch,a,amt])=>{const v=amt*P(a);got+=v;add(M3,dst(ch,a),v);nat(dst(ch,a),{USDT0:'USDT','USDC (Perp)':'USDC'}[a]||a,amt)});
+       if(hib){add(M3,R.unr,hib);unr[via]=(unr[via]||0)+hib}if(net-got-hib>0)add(M3,R.lost,net-got-hib)}
+     else if(/^Bitget Wallet|^Bridgers|^NEAR Intents/.test(via)){add(s,M3,net);add(M3,R.unr,net);const k=via.startsWith('Bitget')?'Bitget Wallet':via;unr[k]=(unr[k]||0)+net}
+     else{add(s,M4,net);add(M4,via==='External wallets'?R.wal:R.svc,net)}});
+   const r=S.tron-G.tron.frozen-G.tron.held-used;if(r>0){add(s,M3,r);add(M3,R.lost,r)}}                  // USDT sold for TRX below the theft-time TRX price, fees
+  {const s=LN.avax,mv=S.avax-G.avax.frozen,v=avaxETH*PX.ETH;add(s,M3,mv);add(M3,R.eth,v);if(mv>v)add(M3,R.lost,mv-v)}   // AVAX → USDC → CCTP → ETH, held on Ethereum
+  {const b=G.base?G.base.stolen:0,v=BASE_ETH*PX.ETH;if(b){add(LN.small,M3,b);add(M3,R.toeth,Math.min(b,v));nat(R.toeth,'ETH',BASE_ETH);if(b>v)add(M3,R.lost,b-v)}}
+  {const c=G.sol,s=LN.sol;Object.entries(c.exited).forEach(([via,v])=>{const hs=HP['Solana|'+via];                 // Solana: bridges by arrival, the rest by what left
+     if(hs){add(s,M3,v);let got=0;hs.forEach(h=>{got+=h.usd;add(M3,dst(h.to,h.asset),h.usd);nat(dst(h.to,h.asset),{USDT0:'USDT','USDC (Perp)':'USDC'}[h.asset]||h.asset,h.amount)});if(v>got){if(/CCTP|Layerswap/.test(via)){add(M3,R.unr,v-got);unr[via]=(unr[via]||0)+v-got}else add(M3,R.lost,v-got)}}
+     else{add(s,M4,v);add(M4,/External|output to be traced/.test(via)?R.wal:R.svc,v)}})}
+  if(G.near){const v=Object.values(G.near.exited||{}).reduce((a,b)=>a+b,0);if(v>0){add(LN.near,M3,v);add(M3,R.unr,v);unr['NEAR bridge']=(unr['NEAR bridge']||0)+v}}   // 11-05: bridge-mng.near destination not resolved yet
+  {const u=Object.entries(unr).sort((a,b)=>b[1]-a[1]),m=v=>'$'+(v>=1e7?Math.round(v/1e6)+'m':(v/1e6).toFixed(1)+'m');NX[R.unr]=u.length?u[0][0]+' '+m(u[0][1])+(u.length>1?' + '+(u.length-1)+' smaller '+m(u.slice(1).reduce((a,x)=>a+x[1],0)):''):''}
+  const byV=(o)=>Object.entries(o||{}).sort((a,b)=>b[1]*(PX[b[0]]||1)-a[1]*(PX[a[0]]||1));
+  const natL=n=>{const d=NAT[n];if(!d)return'';const sa=Object.keys(d).filter(a=>ST.includes(a)&&d[a]>0),st=sa.reduce((a,k)=>a+d[k],0),p=byV(d).filter(([a,v])=>!ST.includes(a)&&v>0).map(([a,v])=>nf(v)+' '+a);
+    if(st)p.push(nf(st)+' '+(sa.length===1?sa[0]:'in stablecoins'));return p.slice(0,n===R.chn?2:3).join(' + ')};
+  const leftN=k=>k==='eth_tok'?`USDT, USDC and ${Object.keys(D.chains.eth.stolen).length-3} other tokens`:k==='eth_nat'?nf(ethN)+' ETH':
+    k==='small'?SM.map(x=>byV((D.chains[x]||{}).stolen).filter(([a])=>!ST.includes(a)).map(([a,v])=>nf(v)+' '+a)[0]).filter(Boolean).join(', '):byV(D.chains[k].stolen).slice(0,2).map(([a,v])=>nf(v)+' '+a).join(' + ');
+  const CL={stolen:Object.values(LN)};CL.frozen=[M1,R.frz,R.rec];CL.held=[M2,M5,R.eth,R.aave,R.btc,R.xrp,R.sol,R.near,R.oth];CL.moved=[M3,M4,R.toeth,R.svc,R.tobtc,R.perp,R.chn];CL.open=[R.wal,R.unr];CL.lost=[R.lost];
+  const cls=n=>Object.keys(CL).find(k=>CL[k].includes(n))||'moved',tin={};Object.entries(L).forEach(([k,v])=>{const t=k.split('\u0001')[1];tin[t]=(tin[t]||0)+v});
+  const NODES=[];[[Object.keys(LN),0],[[M1,M2,M3,M4,M5],1],[[R.frz,R.rec,R.eth,R.aave,R.toeth,R.svc,R.wal,R.unr,R.lost,R.tobtc,R.perp,R.chn,R.btc,R.xrp,R.sol,R.near,R.oth],2]].forEach(([col,d])=>col.forEach(x=>{
+    const v=d===0?S[x]:tin[x];if(v>0)NODES.push({name:d===0?LN[x]:x,depth:d,usd:v,native:d===0?leftN(x):d===2?(NX[x]||natL(x)):''})}));
+  const BN=Object.fromEntries(NODES.map(n=>[n.name,n])),fu=v=>v>=1e9?'$'+(v/1e9).toFixed(2)+'bn':v>=1e7?'$'+Math.round(v/1e6)+'m':'$'+(v/1e6).toFixed(1)+'m';
+  const el=$('#osankey');el.style.height=Math.max(556,Math.min(716,window.innerHeight-154))+'px';
+  const GAP=20,TOP=56,BOT=6,HH=el.clientHeight-TOP-34-BOT,ky=Math.min(...[0,1,2].map(d=>{const c=NODES.filter(n=>n.depth===d);return (HH-(c.length-1)*GAP)/c.reduce((s,n)=>s+n.usd,0)}));
+  const lab=n=>{const amt=`{a|${fu(n.usd)}}`+(n.native?`  {n|${n.native}}`:'');
+    return n.depth===0?{position:'left',align:'right',formatter:n.usd*ky>=34?`{t|${n.name}}\n${amt}`:`{t|${n.name}}  {a|${fu(n.usd)}}`}:
+           n.depth===1?{position:'top',align:'center',distance:4,formatter:`{t|${n.name}}  {a|${fu(n.usd)}}`}:{position:'right',align:'left',formatter:`{t|${n.name}}  ${amt}`}};
+  {const host=el.parentElement;let lg=host.querySelector('.ovleg');if(!lg){host.insertAdjacentHTML('beforeend','<div class="asof netleg ovleg" style="max-width:none"></div>');lg=host.querySelector('.ovleg')}
+   lg.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:3px 12px;justify-content:flex-end;font-size:11px;color:'+css('--ink')+'">'+[['stolen','Stolen, by chain'],['frozen','Frozen or recovered'],['held','Still held by the attacker'],['moved','Moved on'],['open','Not yet traced'],['lost','Lost in swaps and fees']]
+     .map(([k,l])=>`<span style="display:inline-flex;align-items:center;gap:5px"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${K[k]}"></i>${l}</span>`).join('')+'</div>'}
+  {const host=$('#osankey').parentElement;let bx=host.querySelector('.asof:not(.ovleg)');if(!bx){host.insertAdjacentHTML('beforeend','<div class="asof"></div>');bx=host.querySelector('.asof:not(.ovleg)')}
+   bx.innerHTML=`<div style="margin-bottom:4px;max-width:520px"><b>How to read:</b> left — what was stolen, by chain <b>•</b> middle — what happened to it <b>•</b> right — where it is now <b>•</b> band width = value at theft-time prices <b>•</b> hover a band for its amount <b>•</b> click a chain card for its detail</div>`+
+     `${fmt(Object.values(D.chains||{}).reduce((a,c)=>a+((c.wallets||[]).length),0))} attacker wallets · ${fmt(Object.values(D.chains||{}).reduce((a,c)=>a+((c.txs||[]).length),0))} transactions traced across all chains · each chain card shows its own “as of” time<br>Amounts in native units · USD at theft-time prices, for scale only · page built ${D.built||''}`}
+  const ink=css('--ink'),mute=css('--mute'),FF=getComputedStyle(document.body).fontFamily,hd={fill:ink,fontSize:14,fontWeight:700,fontFamily:FF};
+  echarts.init(el).setOption({animation:false,textStyle:{fontFamily:FF},tooltip:{trigger:'item',confine:true,textStyle:{fontFamily:FF},formatter:p=>p.dataType==='edge'?`${p.data.source} → ${p.data.target}<br><b>${fu(p.data.value)}</b>`:`<b>${p.name}</b><br>${fu(BN[p.name].usd)}${BN[p.name].native?'<br>'+BN[p.name].native:''}`},
+    graphic:[{type:'text',left:8,top:38,style:{...hd,text:'Stolen on 29 Oct'}},{type:'text',x:272+(el.clientWidth-272-448-12)/2+6,top:38,style:{...hd,text:'What happened to it',align:'center'}},{type:'text',right:8,top:38,style:{...hd,text:'Where it is now'}}],
+    series:[{type:'sankey',left:272,right:448,top:TOP+34,bottom:BOT,nodeWidth:12,nodeGap:GAP,nodeAlign:'left',layoutIterations:0,draggable:false,emphasis:{focus:'trajectory'},
+      data:NODES.map(n=>({name:n.name,depth:n.depth,itemStyle:{color:K[n.depth===0?'stolen':cls(n.name)],borderWidth:0},label:{...lab(n),color:ink,
+        fontFamily:FF,rich:{t:{fontFamily:FF,fontSize:12.5,fontWeight:600,color:ink,lineHeight:16},a:{fontFamily:FF,fontSize:12.5,fontWeight:700,color:ink,lineHeight:16},n:{fontFamily:FF,fontSize:11.5,color:mute,lineHeight:16}}}})),
+      links:Object.entries(L).filter(([,v])=>v>=1).map(([k,v])=>{const [s,t]=k.split('\u0001'),c=cls(t);return {source:s,target:t,value:Math.round(v),lineStyle:{color:K[c],opacity:c==='frozen'?.28:.55,curveness:.5}}})}]});
+  $('#ocards').innerHTML=C.map(c=>`<div class="cc" data-c="${c.id}"><h4>${c.name}<span class="chip" style="background:${STC(c.status)}">${c.status}</span></h4>
+    <div class="r"><span>stolen</span><b>${usd(c.stolen)}</b></div><div class="r"><span>frozen / recovered</span><b>${usd(c.frozen+c.recovered)}</b></div>
+    <div class="r"><span>still held</span><b>${usd(c.held)}</b></div><div class="r"><span>exited</span><b>${usd(ex(c))}</b></div>
+    <div class="r"><span>held</span><b style="font-weight:500">${Object.entries(c.held_native).map(([k,v])=>short_(v)+' '+k).slice(0,2).join(' · ')||'—'}</b></div>
+    <div class="note" style="margin-top:5px">as of ${c.asof==='pinned tip'?'latest block':(c.asof||'—')}${c.note?' · '+c.note:''}</div></div>`).join('');
+  $('#ocards').querySelectorAll('.cc').forEach(e=>e.onclick=()=>setChain(e.dataset.c));
+  $('#ohops').innerHTML='<tr><th>from</th><th>via</th><th>to</th><th class="n">amount</th><th class="n">≈ USD</th></tr>'+O.hops.slice().sort((a,b)=>b.usd-a.usd).map(h=>`<tr><td>${h.from}</td><td>${h.via}</td><td>${h.to}</td><td class="n">${h.asset==='USD'?usd(h.amount):fmt(h.amount,4)+' '+h.asset}</td><td class="n">${usd(h.usd)}</td></tr>`).join('')}
+// ---------- CHAIN: flow ----------
+let W={}, A=[], LBL={};
+function initChain(){
+  $('#wsel').innerHTML=CH.windows.map((w,i)=>`<div><label><input type="checkbox" data-w="${i}" checked> ${w.from} → ${w.to}</label></div>`).join('');wsum();
+  $('#wsel').querySelectorAll('input').forEach(c=>c.onchange=()=>{c.checked?wins.add(+c.dataset.w):wins.delete(+c.dataset.w);wsum();drawNet()});
+  $('#find').placeholder=`find address (${CH.name})`;drawLegend();
+  const cats=[...new Set(CH.exit_rows.map(r=>r[0]))];$('#cat').innerHTML='<option value="">all</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+  $('#tc').innerHTML='<option value="">all</option>'+CH.cls.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+  $('#tw').innerHTML='<option value="">all</option>'+CH.windows.map((w,i)=>`<option value="${i}">${w.from}→${w.to}</option>`).join('');
+  $('#paywrap').style.display=CH.payouts.length?'':'none';tpage=0;wpage=0;$('#wside').innerHTML='<div class="note">Click a row for details.</div>'}
+// ---------- FLOW: click a box -> drill down one level (where that box's money went next) ----------
+function acctTab(){const X=(typeof CH!=='undefined'&&CH)||D, A=X.accounting, P=k=>typeof px==='function'?px(k):((typeof PX!=='undefined'&&PX[k])||(String(k).startsWith('USD')?1:0));
+  if(!A){$('#acctnote').textContent='no data yet';$('#accttab').innerHTML='';return}
+  const am=d=>Object.entries(d||{}).filter(([k,v])=>v>0.005).sort((a,b)=>b[1]*P(b[0])-a[1]*P(a[0])).map(([k,v])=>`${fmt(v,2)} ${k}`).join(' + ')||'—';
+  const su=d=>Object.entries(d||{}).reduce((a,[k,v])=>a+v*P(k),0);
+  $('#acctnote').textContent=`What LEFT the ${X.name||'Tron'} tree vs what was RECEIVED on the other side, per route, in native units (USD only for scale). As of ${A.built||''}. Refunds and retries are separate lines, nothing is netted silently.`;
+  const R=Object.entries(A.routes).sort((a,b)=>su(b[1].sent)-su(a[1].sent));
+  $('#accttab').innerHTML=`<tr><th>route</th><th>sent from ${X.name||'Tron'}</th><th>received (chain · asset · amount · recipients)</th><th>refunded${X.id==='sol'?' / withdrawn back':''} to ${X.name||'Tron'}</th><th>fees / other</th><th>not resolved yet</th></tr>`+
+   R.map(([r,o])=>`<tr><td><b>${r}</b><div class="note">${usd(su(o.sent))}</div></td><td>${am(o.sent)}</td><td>${(o.received||[]).sort((a,b)=>b[2]*P(b[1])-a[2]*P(a[1])).map(([c,a,v,n])=>`<div>${c} · <b>${fmt(v,v>1000?2:4)} ${a}</b> <span class="note">${n} recipients</span></div>`).join('')||`<span class="note">${X.name||'Tron'}-side destination</span>`}</td>
+     <td>${am(o.refunded)}${o.held_in_bridge&&Object.keys(o.held_in_bridge).length?`<div><b>held in bridge:</b> ${am(o.held_in_bridge)} <span class="note">not delivered — likely frozen</span></div>`:''}</td><td>${am(o.fees)}${Object.keys(o.other||{}).length?'<div class="note">'+Object.entries(o.other).map(([k,v])=>k+' ≈'+usd(v)).join(' · ')+'</div>':''}</td><td>${o.unresolved?am(o.unresolved):'<span class="note">n/a</span>'}</td></tr>`).join('')+
+   `<tr><td><b>Still on ${X.name||'Tron'}</b></td><td colspan="5">${(A.held||[]).map(([a,h,z])=>`${a}: held ${fmt(h,2)} · frozen ${fmt(z,2)}`).join(' &nbsp;|&nbsp; ')}</td></tr>`}
+let HOWTO='';
+function asofBox(){const X=(typeof CH!=='undefined'&&CH)||D, host=$('#sankey')&&$('#sankey').parentElement;if(!host||!X||!X.windows)return;
+  let b=host.querySelector('.asof');if(!b){host.insertAdjacentHTML('beforeend','<div class="asof"></div>');b=host.querySelector('.asof')}
+  const w=X.windows, last=w.length?w[w.length-1].to:'', first=w.length?w[0].from:'', built=(typeof D!=='undefined'&&D.built)||'';
+  const howto=($('#drillbar')&&!$('#drillbar').hidden&&HOWTO)?`<div style="margin-bottom:4px;max-width:520px">${HOWTO}</div>`:'';
+  b.innerHTML=howto+`<b>Data as of ${last} UTC</b> (activity since ${first} UTC)<br>${fmt((X.wallets||[]).length)} attacker wallets traced · page built ${built}<br>Amounts in native units · USD at theft-time prices, for scale only`}
+function hookSankey(){HOWTO='';asofBox();if($('#sankey').style.height!=='520px'){$('#sankey').style.height='520px';const c0=echarts.getInstanceByDom($('#sankey'));if(c0)c0.resize()}const c=echarts.getInstanceByDom($('#sankey'));if(!c)return;c.off('click');c.on('click',p=>{if(p.dataType==='node')drill(p.name)});
+  if(!$('#drillbar'))$('#sankey').insertAdjacentHTML('beforebegin','<div id="drillbar" style="margin:4px 0 6px" hidden><button id="drillback">← back to full flow</button> <b id="drilltitle"></b> <span class="note" id="drillnote"></span></div>');
+  $('#drillbar').hidden=true;$('#drillback').onclick=()=>drawFlow()}
+const SVCC={'deBridge':'#9467BD','THORChain':'#F58518','Relay':'#4C78A8','Symbiosis':'#54A24B','Chainflip':'#2BB39B','USDT0 bridge':'#E4B200','Across':'#B279A2','Bitget Wallet Swap Bridge':'#E45756',
+               'Bridgers':'#9D755D','NEAR Intents':'#72B7B2','JustLend':'#FF9DA6','HitBTC (via a service account)':'#8C6D31','Gate (via a service account)':'#BCBD22','ChangeHero':'#17BECF','FixedFloat':'#7F7F7F',
+               'CCTP (Circle)':'#2E8B57','Layerswap':'#E377C2','Swaps (output to be traced)':'#BAB0AC','Unidentified services':'#A0A0A0','OKX (exchange)':'#7F7F7F'};   // Solana services (11-03)
+function exLink(a){return /^0x[0-9a-fA-F]{40}$/.test(a)?'https://etherscan.io/address/'+a:/^(bc1|[13])/.test(a)?'https://mempool.space/address/'+a:/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)?'https://tronscan.org/#/address/'+a:''}
+function txLink(chain,tx){if(!tx)return '';const c=String(chain);return /Ethereum|^ETH/.test(c)?'https://etherscan.io/tx/'+tx:/Arbitrum/.test(c)?'https://arbiscan.io/tx/'+tx:/Base|^BASE/.test(c)?'https://basescan.org/tx/'+tx:/Bitcoin|^BTC/.test(c)?'https://mempool.space/tx/'+tx:''}
+function showReceipts(addr){const X=(typeof CH!=='undefined'&&CH)||D, al=String(addr).toLowerCase();
+  const R=(X.bridge_out||[]).filter(r=>String(r[2]).toLowerCase()===al).sort((a,b)=>(a[9]||0)-(b[9]||0));
+  const P=(X.payouts||[]).filter(p=>String(p.to).toLowerCase()===al);
+  const host=$('#sankey').parentElement;let b=host.querySelector('.morebox');if(!b){host.insertAdjacentHTML('beforeend','<div class="morebox"></div>');b=host.querySelector('.morebox')}
+  const u=exLink(addr), tot={};R.forEach(r=>tot[r[3]]=(tot[r[3]]||0)+(r[4]||0));P.forEach(p=>tot[p.asset]=(tot[p.asset]||0)+p.amt);
+  const t=ts=>ts?new Date(ts*1000).toISOString().slice(5,16).replace('T',' '):'—', trs=a=>a?`<a href="https://tronscan.org/#/address/${a}" target="_blank" rel="noopener">${a.slice(0,8)}…${a.slice(-4)}</a>`:'—', ttx=h=>h?`<a href="https://tronscan.org/#/transaction/${h}" target="_blank" rel="noopener">${h.slice(0,8)}…</a>`:'—';
+  b.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b>How this address received</b><button class="x">✕</button></div>
+    <div class="addr" style="margin-bottom:4px">${u?`<a href="${u}" target="_blank" rel="noopener">${addr}</a>`:addr}</div>
+    <div class="note" style="margin-bottom:8px">${R.length+P.length} payment${R.length+P.length===1?'':'s'} from the Tron tree · received ${Object.entries(tot).map(([k,v])=>fmt(v,v>1000?0:4)+' '+k).join(' + ')}</div>`+
+    (R.length?`<button class="tg" style="margin:2px 0 6px">▸ Show payments (${R.length})</button><table class="rc" style="width:100%" hidden><tr><th>time (UTC)</th><th>from (Tron)</th><th>deposit tx</th><th class="n">sent</th><th class="n">received</th><th>payout tx</th></tr>${R.map(r=>`<tr><td>${t(r[9])}</td><td class="addr">${trs(r[8])}</td><td class="addr">${ttx(r[7])}</td><td class="n">${fmt(r[12]||0,0)} ${r[11]||''}</td><td class="n">${fmt(r[4]||0,(r[4]||0)>1000?0:4)} ${r[3]}</td><td class="addr">${r[10]?(txLink(r[1],r[10])?`<a href="${txLink(r[1],r[10])}" target="_blank" rel="noopener">${String(r[10]).slice(0,10)}…</a>`:String(r[10]).slice(0,10)+'…'):'—'}</td></tr>`).join('')}</table>`:'')+
+    (P.length?`<div class="note" style="margin-top:6px">THORChain payouts: ${P.map(p=>fmt(p.amt,4)+' '+p.asset).join(' · ')} (window ${P.map(p=>((X.windows||[])[p.win]||{}).to||'').join(', ')}) — per-deposit detail in the THORChain records</div>`:'');
+  b.hidden=false;b.querySelector('.x').onclick=()=>{b.hidden=true};const tg=b.querySelector('.tg'),rc=b.querySelector('table.rc');if(tg&&rc)tg.onclick=()=>{rc.hidden=!rc.hidden;tg.textContent=(rc.hidden?'▸ Show':'▾ Hide')+` payments (${R.length})`}}
+function showMore(title,rows){const host=$('#sankey').parentElement;let b=host.querySelector('.morebox');if(!b){host.insertAdjacentHTML('beforeend','<div class="morebox"></div>');b=host.querySelector('.morebox')}
+  const R=rows.slice().sort((x,y)=>y[1]-x[1]);
+  b.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>${title}</b><button class="x">✕</button></div><div class="note" style="margin-bottom:6px">${R.length} addresses · ${usd(R.reduce((a,r)=>a+r[1],0))} · sorted by amount</div>`+
+    `<table style="width:100%">${R.map(([a,v],i)=>{const u=exLink(a);return `<tr><td class="note">${i+1}</td><td class="addr"><a href="#" data-rcpt="${a}">${a}</a></td><td class="n">${usd(v)}</td></tr>`}).join('')}</table>`;
+  b.hidden=false;b.querySelector('.x').onclick=()=>{b.hidden=true};b.querySelectorAll('a[data-rcpt]').forEach(x=>x.onclick=e=>{e.preventDefault();showReceipts(x.dataset.rcpt)})}
+function drill(name){
+  const X=(typeof CH!=='undefined'&&CH)||D, P=k=>typeof px==='function'?px(k):((typeof PX!=='undefined'&&PX[k])||(String(k).startsWith('USD')?1:0));
+  let NOGROUP=false,ORDER=null,FIXED=false,WAM={};const NC={},MORE={};HOWTO='';{const mb=$('#sankey').parentElement.querySelector('.morebox');if(mb)mb.hidden=true}const BO=X.bridge_out||[], VIA=new Set(BO.map(r=>r[0]).concat(['THORChain'])), n=new Set(), L=[], lab={};
+  const add=(s,t,v)=>{if(v>0.5){n.add(s);n.add(t);L.push({source:s,target:t,value:Math.round(v)})}};
+  const sh=a=>a&&a.length>18?a.slice(0,8)+'…'+a.slice(-4):a, hv=h=>Array.isArray(h)?(h[0]||0)*P('TRX')+(h[1]||0)*P('USDT'):Object.entries(h||{}).reduce((a,[k,v])=>a+v*P(k),0);
+  const catU={};(X.exit_rows||[]).forEach(r=>{catU[r[0]]=(catU[r[0]]||0)+r[3]*P(r[2])});
+  const top=(src,rows,k)=>{rows.sort((a,b)=>b[1]-a[1]);rows.slice(0,k).forEach(([id,v])=>{lab[id]=sh(id)+(WAM[id]?' ('+Object.entries(WAM[id]).sort((a,b)=>b[1]*P(b[0])-a[1]*P(a[0])).map(([a,x])=>`${fmt(x,x>1000?0:x>1?2:4)} ${a}`).join(' + ')+')':` (${usd(v)})`);add(src,id,v)});const rest=rows.slice(k);if(rest.length){const id=`${src} · ${rest.length} more`;MORE[id]=rest.map(([a,v])=>[a,v]);lab[id]=`${rest.length} more addresses (${usd(rest.reduce((a,x)=>a+x[1],0))})`;add(src,id,rest.reduce((a,x)=>a+x[1],0))}};
+  const bridge=(b,deep)=>{let rows=b==='THORChain'?(X.payouts||[]).map(p=>[b,p.chain,p.to,p.asset,p.amt,p.amt*P(p.asset),'payout']):BO.filter(r=>r[0]===b);
+    const g={},AM={};let res=0;rows.forEach(r=>{if(r[2]&&!/refund|held|fail|pending|not resolved|in flight|in transit|revert/i.test(r[1])){AM[r[2]]=AM[r[2]]||{};AM[r[2]][r[3]]=(AM[r[2]][r[3]]||0)+(r[4]||0)}const k=`${b} → ${r[1]}${r[2]&&r[1]!==r[3]?' · '+r[3]:''}`;g[k]=g[k]||{v:0,a:{},amt:0,as:r[3]};g[k].v+=r[5];g[k].amt+=r[4];res+=r[5];if(r[2])g[k].a[r[2]]=(g[k].a[r[2]]||0)+r[5]});
+    WAM=AM;Object.entries(g).sort((a,b)=>b[1].v-a[1].v).forEach(([k,o])=>{if(/refund|held|fail|pending|not resolved|in flight|in transit|revert/i.test(k))return;lab[k]=k.slice(b.length+3)+` (${fmt(o.amt,o.amt>1000?0:3)}${k.includes(' · ')?'':' '+o.as})`;add(b,k,o.v);if(deep&&Object.keys(o.a).length)top(k,Object.entries(o.a),8)});
+    return res};
+  let title=name, note='';
+  if(VIA.has(name)){const r=bridge(name,true);FIXED=true;HOWTO=`<b>How to read:</b> ${name} → destination chain → receiving wallets, largest first (amount received in brackets). Click a wallet for how it received; click “N more” for the rest.`;note=''}
+  else if(/Laundering pool/.test(name)){const XC=new Set(['THORChain','Relay','Layerswap','CCTP (Circle)','Symbiosis','Chainflip','USDT0 bridge','Across','Bridgers','NEAR Intents','Bitget Wallet Swap Bridge','Bitget Wallet swap → bridge (via TM8uyBjR)']),
+      CN=(X.name||'Tron'),LEFT=`Left ${CN} (bridges)`,STAY=`Stayed on ${CN} (exchanges, services, DeFi)`,CHN={ETH:'Ethereum',BTC:'Bitcoin',BASE:'Base',ZEC:'Zcash'};let lv=0,sv=0;NOGROUP=true;
+    const SVC=Object.assign({},SVCC);
+    const SKIP=/refund|held|fail|pending|not resolved|in flight|in transit|revert/i;let br=[], st=[];
+    Object.entries(catU).forEach(([c,v])=>{
+      if(!XC.has(c)){st.push({c,v});return}
+      const rows=c==='THORChain'?(X.payouts||[]).map(p=>['THORChain',p.chain,p.to,p.asset,p.amt,p.amt*P(p.asset)]):BO.filter(r=>r[0]===c);
+      const g={};rows.forEach(r=>{if(SKIP.test(r[1]))return;const ch=CHN[String(r[1]).split(' ')[0]]||String(r[1]).split(' ')[0];const k=`${c} → ${ch}`;
+        g[k]=g[k]||{ch,v:0,as:{}};g[k].v+=r[5];g[k].as[r[3]]=(g[k].as[r[3]]||0)+r[4]});
+      const del=Object.values(g).reduce((a,o)=>a+o.v,0);br.push({c,v:del>0?del:v,g,known:del>0})});
+    br.sort((a,b)=>b.v-a.v);st.sort((a,b)=>b.v-a.v);
+    {const all=br.reduce((a,b)=>a+b.v,0)+st.reduce((a,b)=>a+b.v,0), thr=all*0.006, merge=(arr,label,cond)=>{const sm=arr.filter(x=>x.v<thr&&cond(x));if(sm.length<2)return arr;
+       const m={c:label+': '+sm.map(x=>x.c.replace(/ \(.*\)$/,'')).join(' · '),v:sm.reduce((a,x)=>a+x.v,0),g:{},known:false,merged:true};SVC[m.c]='#9a9a9a';return [...arr.filter(x=>!sm.includes(x)),m]};
+     br=merge(br,'Smaller bridges',x=>!x.known);st=merge(st,'Smaller',x=>true)}
+    ORDER=[name,LEFT,STAY,...br.map(b=>b.c),...st.map(s=>s.c)];
+    br.forEach(b=>{add(name,LEFT,b.v);add(LEFT,b.c,b.v);lv+=b.v;NC[b.c]=SVC[b.c]||'#999';if(!b.merged)lab[b.c]=`${b.c} (${usd(b.v)})`;
+      if(!b.known){lab[b.c]=b.merged?`${b.c} (${usd(b.v)})`:`${b.c} (${usd(b.v)}) — destination to be resolved`;return}
+      Object.entries(b.g).sort((x,y)=>y[1].v-x[1].v).forEach(([k,o])=>{ORDER.push(k);NC[k]=NC[b.c];
+        lab[k]=`${o.ch} (`+Object.entries(o.as).sort((a,b2)=>b2[1]*P(b2[0])-a[1]*P(a[0])).map(([a,x])=>`${fmt(x,x>1000?0:2)} ${a}`).join(' + ')+')';add(b.c,k,o.v)})});
+    st.forEach(s=>{add(name,STAY,s.v);add(STAY,s.c,s.v);sv+=s.v;NC[s.c]=SVC[s.c]||'#aaa';lab[s.c]=`${s.c} (${usd(s.v)})`});
+    NC[LEFT]='#555';NC[STAY]='#aaa';NC[name]='#333';
+    lab[LEFT]=`Left ${CN} · bridges (${usd(lv)})`;lab[STAY]=`Stayed on ${CN} · exchanges, services, DeFi (${usd(sv)})`;
+    note='';HOWTO=`<b>How to read:</b> left → right — bridges (left ${CN}) vs services on ${CN}; one colour per service, ending on the chain where funds arrived. Hover to follow, click for addresses.`}
+  else if(/Still held/.test(name)){top(name,(X.wallets||[]).filter(w=>!w.frozen).map(w=>[w.id,hv(w.held)]).filter(x=>x[1]>1),15);note='attacker wallets still holding, at the last ledger cutoff'}
+  else if(/Frozen/.test(name)){top(name,(X.wallets||[]).filter(w=>w.frozen).map(w=>[w.id,hv(w.held)]).filter(x=>x[1]>1),15);note='wallets frozen by the issuer'}
+  else if(catU[name]){top(name,(X.exit_rows||[]).filter(r=>r[0]===name).reduce((m,r)=>{const i=m.findIndex(x=>x[0]===r[1]);i<0?m.push([r[1],r[3]*P(r[2])]):m[i][1]+=r[3]*P(r[2]);return m},[]),15);note='destinations on '+(X.name||'Tron')}
+  else return;
+  if(!L.length){note='nothing resolved here yet';}
+  if(!NOGROUP){const tot=L.filter(l=>l.source===name).reduce((a,l)=>a+l.value,0)||1, cut=tot*0.004, keep=[], small={};
+   L.forEach(l=>{if(l.value<cut&&!L.some(m=>m.source===l.target)){(small[l.source]=small[l.source]||[]).push(l)}else keep.push(l)});
+   Object.entries(small).forEach(([s,ls])=>{if(ls.length<2){keep.push(...ls);return}const id=`${s} · ${ls.length} smaller`;MORE[id]=ls.map(l=>[l.target.includes('|')?l.target.split('|').pop():l.target,l.value]);lab[id]=`${ls.length} smaller (${usd(ls.reduce((a,l)=>a+l.value,0))})`;
+     ls.forEach(l=>{if(!keep.some(k=>k.source===l.target||k.target===l.target))n.delete(l.target)});keep.push({source:s,target:id,value:ls.reduce((a,l)=>a+l.value,0)});n.add(id)});
+   L.length=0;L.push(...keep);[...n].forEach(x=>{if(!L.some(l=>l.source===x||l.target===x))n.delete(x)})}
+  const cols={};L.forEach(l=>{cols[l.target]=1});const fit=Math.max(420,window.innerHeight-210), tall=Math.min(fit,Math.max(420,Object.keys(cols).length*22+60));$('#sankey').style.height=tall+'px';   // always fits one laptop screen
+  const c0=echarts.getInstanceByDom($('#sankey'));if(c0)c0.dispose();
+  const ch=echarts.init($('#sankey'));
+  ch.setOption({tooltip:{trigger:'item',confine:true,formatter:p=>p.dataType==='edge'?`${lab[p.data.source]||p.data.source} → ${lab[p.data.target]||p.data.target}<br>${usd(p.data.value)}`:MORE[p.name]?`<b>${lab[p.name]||p.name}</b><br>`+MORE[p.name].slice().sort((x,y)=>y[1]-x[1]).slice(0,12).map(([a,v])=>`${a} — ${usd(v)}`).join('<br>')+(MORE[p.name].length>12?`<br><i>… click to see all ${MORE[p.name].length}</i>`:'<br><i>click to list them</i>'):`${p.name}`},
+    series:[{type:'sankey',left:8,right:FIXED?330:250,top:8,bottom:8,nodeAlign:(ORDER||FIXED)?'left':'justify',
+      data:(ORDER?[...ORDER.filter(x=>n.has(x)),...[...n].filter(x=>!ORDER.includes(x))]:[...n]).map(x=>({name:x,itemStyle:{color:NC[x]||(!ORDER&&SVCC[name]?SVCC[name]:null)||EXC[x]||EXC[x.split(' → ')[0]]||EXC.STRUCT}})),
+      links:ORDER?L.map(l=>Object.assign({},l,{lineStyle:{color:NC[l.target]&&!/^(Left Tron|Stayed on Tron)/.test(l.target)?NC[l.target]:(NC[l.source]&&l.source!==name?NC[l.source]:'#cfcfcf'),opacity:.55}})):(SVCC[name]?L.map(l=>Object.assign({},l,{lineStyle:{color:SVCC[name],opacity:.45}})):L),
+      emphasis:{focus:ORDER?'trajectory':'adjacency',lineStyle:{opacity:.85}},blur:{lineStyle:{opacity:.08},itemStyle:{opacity:.25}},nodeGap:Math.max(4,Math.min(ORDER?14:10,Math.floor(tall/Math.max(1,Object.keys(cols).length)/3))),layoutIterations:(ORDER||FIXED)?0:64,
+      label:{color:css('--ink'),fontSize:11,width:FIXED?320:240,overflow:'truncate',formatter:p=>lab[p.name]||p.name},lineStyle:{color:'target',opacity:.38}}]});
+  ch.on('click',p=>{if(p.dataType!=='node')return;if(MORE[p.name]){showMore(lab[p.name]||p.name,MORE[p.name]);return}const nm=p.name.includes('|')?p.name.split('|').pop():p.name;if(nm!==name&&(VIA.has(nm)||catU[nm]))drill(nm);else if(/^(0x[0-9a-fA-F]{40}|T[1-9A-HJ-NP-Za-km-z]{33}|bc1|[13][a-km-zA-HJ-NP-Z1-9]{25,34}|\d{3,9}$)/.test(nm))showReceipts(nm);else if(false)window.open(nm.startsWith('0x')?'https://etherscan.io/address/'+nm:nm.startsWith('T')?'https://tronscan.org/#/address/'+nm:'https://mempool.space/address/'+nm,'_blank')});
+  $('#drillbar').hidden=false;$('#drilltitle').textContent=title;$('#drillnote').textContent=note?' '+note:'';window.__drill=name;asofBox()}
+window.addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if(window.__drill&&$('#drillbar')&&!$('#drillbar').hidden)drill(window.__drill)},250)});
+function drawFlow(){setTimeout(hookSankey,0);['#sankey','#bars'].forEach(s=>{const c=echarts.getInstanceByDom($(s));if(c)c.dispose()});
+  const st=Object.entries(CH.stolen).map(([k,v])=>[k,v*px(k)]).sort((a,b)=>b[1]-a[1]), stolenU=st.reduce((a,x)=>a+x[1],0);
+  const frz=Object.entries(CH.held).reduce((a,[k,v])=>a+v[1]*px(k),0), held=Object.entries(CH.held).reduce((a,[k,v])=>a+v[0]*px(k),0);
+  const catU={};CH.exit_rows.forEach(r=>{catU[r[0]]=(catU[r[0]]||0)+r[3]*px(r[2])});const exited=Object.values(catU).reduce((a,b)=>a+b,0)-Object.values(CH.returns_usd||{}).reduce((a,b)=>a+b,0), resid=stolenU-frz-held-exited;
+  const ov=D.overview.chains.find(c=>c.id===CH.id);
+  $('#kpis').innerHTML=[[usd(ov.stolen),st.length?`stolen on ${CH.name} (${st.slice(0,2).map(([k])=>short_(CH.stolen[k])+' '+k).join(' + ')}${st.length>2?' + '+(st.length-2)+' more':''})`:`nothing stolen on ${CH.name} — funds arrived from other chains`],
+   [usd(ov.frozen+ov.recovered),ov.recovered?'recovered (Security Council)':'frozen / seized by issuers'],[usd(held),'still held: '+am(Object.fromEntries(Object.entries(CH.held).map(([k,v])=>[k,v[0]])))],
+   [usd(exited),`left the ${CH.name} tree (excl. swap churn)`],[fmt(CH.wallets.length),`attacker wallets in the ledger (${CH.windows.length} window${CH.windows.length>1?'s':''})`]].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#cnote').textContent=(CH.note||'')+(CH.windows.length?` As of ${CH.windows[CH.windows.length-1].to} UTC.`:'');
+  const n=new Set(),L=[],add=(s,t,v)=>{if(v>1){n.add(s);n.add(t);L.push({source:s,target:t,value:Math.round(v)})}}, src=`Binance (${CH.name})`;
+  if(!st.length)add('Arrived from other chains','Laundering pool',held+exited);   // 11-05: a chain with no theft (BSC) still shows its flow
+  const topA=st.slice(0,4), rest=st.slice(4).reduce((a,x)=>a+x[1],0);
+  topA.forEach(([k,v])=>{const f=Math.min(v,(CH.held[k]||[0,0])[1]*px(k));add(src,'Stolen '+k,v);add('Stolen '+k,'Frozen',f);add('Stolen '+k,'Laundering pool',v-f)});
+  if(rest>0){add(src,'Stolen other tokens',rest);const f=Math.max(0,frz-topA.reduce((a,[k])=>a+Math.min(CH.stolen[k]*px(k),(CH.held[k]||[0,0])[1]*px(k)),0));add('Stolen other tokens','Frozen',Math.min(f,rest));add('Stolen other tokens','Laundering pool',rest-Math.min(f,rest))}
+  add('Laundering pool','Still held',held);Object.entries(catU).forEach(([c,v])=>add('Laundering pool',c,v));if(resid>0)add('Laundering pool','Residual (price/slippage/fees)',resid);
+  const pc={};CH.payouts.forEach(p=>{const k=p.asset==='ETH'?'ETH payouts':p.asset==='BTC'?'BTC payouts':p.asset==='ZEC'?'ZEC payouts':'Stablecoin payouts';pc[k]=(pc[k]||0)+p.amt*(D.px[p.asset]||(p.asset.startsWith('USD')?1:0))});
+  Object.entries(pc).forEach(([k,v])=>add('THORChain',k,v));
+  echarts.init($('#sankey')).setOption({tooltip:{trigger:'item',formatter:p=>p.dataType==='edge'?`${p.data.source} → ${p.data.target}<br>${usd(p.data.value)}`:p.name},
+    series:[{type:'sankey',data:[...n].map(x=>({name:x,itemStyle:{color:EXC[x]||(x.includes('payouts')?EXC.THORChain:x.startsWith('Residual')?EXC.RESID:EXC.STRUCT)}})),links:L,
+    emphasis:{focus:'adjacency'},nodeGap:12,label:{color:css('--ink'),fontSize:12},lineStyle:{color:'target',opacity:.38}}]});
+  const fold=c=>EXC[c]===EXC.OTHER?'Other exits':c, BW={};CH.by_win_cat.forEach(([i,c,v])=>{const k=fold(c);BW[k]=BW[k]||{};BW[k][i]=(BW[k][i]||0)+v});
+  const cats=Object.keys(BW);$('#barscard').hidden=!cats.length;if(!cats.length)return;
+  echarts.init($('#bars')).setOption({title:{text:'Exits per ledger window (USD, display)',textStyle:{fontSize:13,color:css('--ink')}},tooltip:{trigger:'axis',valueFormatter:usd},legend:{top:22,textStyle:{color:css('--mute')}},grid:{top:70,left:70,right:20,bottom:30},
+    xAxis:{type:'category',data:CH.windows.map(w=>w.from+'→'+w.to),axisLabel:{color:css('--mute')}},yAxis:{type:'value',axisLabel:{formatter:usd,color:css('--mute')}},
+    series:cats.map(c=>({name:c,type:'bar',stack:'x',itemStyle:{color:EXC[c]||EXC.OTHER,borderColor:css('--panel'),borderWidth:1},data:CH.windows.map((_,i)=>Math.round((BW[c]||{})[i]||0))}))})}
+// ---------- CHAIN: network ----------
+const wins=new Set();
+const wsum=()=>{$('#wsum').textContent='windows: '+(wins.size===CH.windows.length?'all':wins.size+' of '+CH.windows.length)};
+['#thr','#showin','#showswap','#lay'].forEach(s=>$(s).onchange=drawNet);
+const wincFor=()=>isDark()?['#184f95','#256abf','#3987e5','#6da7ec','#9ec5f4','#cde2fb']:['#86b6ef','#5598e7','#2a78d6','#1c5cab','#104281','#0d366b'];
+let WINC=wincFor();
+function drawLegend(){if(!CH)return;const roles=[...new Set(CH.wallets.map(w=>w.frozen?'frozen':w.role))];
+  $('#legend').innerHTML=roles.map(k=>`<span><i style="background:${ROLEC[k]||EXC.OTHER}"></i>${k}</span>`).join('')+[...new Set(CH.exits.map(e=>e[1].startsWith('X:ext:')?'External wallets':e[1].slice(2)))].map(k=>`<span><i style="background:${EXC[k]||EXC.OTHER};border-radius:2px"></i>${k}</span>`).join('');
+  $('#wleg').innerHTML=('<span>link colour by window:</span>'+CH.windows.map((w,i)=>`<span><i style="background:${WINC[i%WINC.length]};border-radius:0;height:3px;width:16px"></i>${w.to}</span>`).join(''))}
+const inW=ws=>ws.some(w=>wins.has(w));
+function flowLayout(nodes,E,N){
+  const inc={},out={};Object.values(E).forEach(e=>{if(e.kind==='exit')return;(out[e.s]=out[e.s]||[]).push(e.t);(inc[e.t]=inc[e.t]||[]).push(e.s)});
+  const d={},q=[];nodes.forEach(n=>{const k=N[n.id].kind;if(n.id==='SRC'||(k==='w'&&!(inc[n.id]||[]).some(s=>N[s]&&N[s].kind==='w'||s==='SRC'))){d[n.id]=n.id==='SRC'?0:1;q.push(n.id)}});
+  while(q.length){const a=q.shift();(out[a]||[]).forEach(b=>{if(N[b]&&N[b].kind==='w'&&d[b]===undefined){d[b]=d[a]+1;q.push(b)}})}
+  let mx=0;nodes.forEach(n=>{if(N[n.id].kind==='w'){if(d[n.id]===undefined)d[n.id]=1;mx=Math.max(mx,d[n.id])}});
+  nodes.forEach(n=>{const k=N[n.id].kind;if(k==='x')d[n.id]=mx+1;else if(k==='o'&&n.id!=='SRC'){const ts=Object.values(E).filter(e=>e.s===n.id).map(e=>d[e.t]||1);d[n.id]=Math.max(0,Math.min(...ts)-1)}});
+  const cols={},y={};nodes.forEach(n=>(cols[d[n.id]]=cols[d[n.id]]||[]).push(n));
+  const Wd=$('#netc').clientWidth-140, H=$('#netc').clientHeight-40, ncol=Object.keys(cols).length;
+  Object.keys(cols).map(Number).sort((a,b)=>a-b).forEach(c=>{const col=cols[c];
+    col.forEach(n=>{const ps=(inc[n.id]||[]).filter(p=>y[p]!==undefined);n._b=ps.length?ps.reduce((s,p)=>s+y[p],0)/ps.length:N[n.id].kind==='x'?-N[n.id].val:0});
+    col.sort((a,b)=>a._b-b._b);
+    const per=Math.max(8,Math.floor(H/16)), sub=Math.ceil(col.length/per), rows=Math.ceil(col.length/sub), gap=Math.min(26,H/Math.max(rows,1)), band=Wd/(ncol+1);
+    col.forEach((n,i)=>{const k=Math.floor(i/rows),r=i%rows;y[n.id]=(r-rows/2)*gap;n.x=c*band+k*Math.min(40,band/(sub+1));n.y=y[n.id];
+      n.symbolSize=Math.min(n.symbolSize,sub>1?10:30);n.label.position='right'})})}
+function netHowto(nodes){const host=$('#netc')&&$('#netc').parentElement;if(!host)return;if(getComputedStyle(host).position==='static')host.style.position='relative';
+  // top bar: only the threshold; everything else behind "more options"
+  const ctl=$('#net .ctl');if(ctl&&!ctl.dataset.slim){ctl.dataset.slim=1;[...ctl.children].forEach(c=>{if(!c.querySelector||!c.querySelector('#thr'))c.classList.add('netmore')});
+    ctl.insertAdjacentHTML('beforeend','<button id="netmorebtn" style="margin-left:6px">more options ▾</button>');
+    $('#netmorebtn').onclick=()=>{const on=ctl.classList.toggle('showmore');$('#netmorebtn').textContent=on?'fewer options ▴':'more options ▾';drawNet()}}
+  // legend lives in the corner box
+  const leg=$('#legend');if(leg)leg.style.display='none';
+  const seen=new Map();(nodes||[]).forEach(d=>{const n=d._n;if(!n||n.kind!=='w')return;const w=W[d.id];const r=(w&&w.frozen)?'frozen':(n.role||(w&&w.role)||'layering');if(!seen.has(r))seen.set(r,(d.itemStyle||{}).color||ROLEC[r]||EXC.OTHER)});
+  const roles=[...seen].map(([r,c])=>`<span><i style="background:${c}"></i>${r}</span>`).join('');
+  let b=host.querySelector('.asof:not(.netleg)');if(!b){host.insertAdjacentHTML('beforeend','<div class="asof"></div>');b=host.querySelector('.asof:not(.netleg)')}b.style.maxWidth='57%';
+  const X=(typeof CH!=='undefined'&&CH)||D, w=X.windows||[], last=w.length?w[w.length-1].to:'', th=$('#thr')?$('#thr').selectedOptions[0].text:'';
+  let tt=host.querySelector('.nettitle');if(!tt){host.insertAdjacentHTML('beforeend','<div class="nettitle"></div>');tt=host.querySelector('.nettitle')}
+  tt.innerHTML=`<div style="font-size:16px;font-weight:700;color:var(--ink)">Binance Hack — ${CH.name} laundering network</div><div style="font-size:12px;color:var(--muted,#777)">attacker wallets moving ${th==='all'?'any amount':th+' or more'} · as of ${last} UTC</div>`;
+  let lg=host.querySelector('.netleg');if(!lg){host.insertAdjacentHTML('beforeend','<div class="netleg asof"></div>');lg=host.querySelector('.netleg')}
+  lg.innerHTML=`<div class="legend">${roles}<span><i style="background:#999;border-radius:2px"></i>exits (named squares)</span></div>`;
+  {const c=$('#net .ctl'), avail=Math.max(400,window.innerHeight-(c?c.getBoundingClientRect().height:40)-182);if(Math.abs($('#netc').clientHeight-avail)>4){$('#netc').style.height=avail+'px';if(net)setTimeout(()=>net.resize(),0)}}
+  b.innerHTML=
+    `<b>How to read:</b> dots are attacker wallets (bigger = more moved), lines are transfers, squares are where funds left. Smaller wallets are grouped into their funder. Click a dot for details.&nbsp; <b style="color:var(--ink)">•</b> &nbsp;${fmt((X.wallets||[]).length)} attacker wallets traced&nbsp; <b style="color:var(--ink)">•</b> &nbsp;Amounts in native units; USD at theft-time prices`}
+function drawNet(){if(tab!=='net')return;
+  const thr=+$('#thr').value, PLAIN={'layering':1,'service deposit address':1,'peel hop':1}, vis=a=>{const w=W[a];return w&&(!PLAIN[w.role]||w.thru>=thr)}, memo={};
+  const map=a=>{if(memo[a])return memo[a];let c=a,seen=new Set();while(c&&!vis(c)&&!seen.has(c)){seen.add(c);c=W[c]&&W[c].parent}return memo[a]=(c&&vis(c))?c:'G:unattached'};
+  const N={},E={},node=(id,o)=>N[id]=N[id]||Object.assign({id,val:0,inner:0,members:new Set()},o),
+    edge=(s,t,u,a,n,kind,ws)=>{const k=s+'|'+t;const e=E[k]=E[k]||{s,t,u:0,am:{},n:0,kind,w:0};e.u+=u;Object.entries(a).forEach(([x,v])=>e.am[x]=(e.am[x]||0)+v);e.n+=n;e.w=Math.max(e.w,...(ws||[0]))};
+  CH.wallets.forEach(w=>{if(!inW([...Object.keys(w.win)].map(Number)))return;const m=map(w.id);const r=m.startsWith('G:')?'layering':W[m].role;node(m,{kind:'w',role:r}).members.add(w.id)});
+  CH.links.forEach(([f,t,u,a,n,ws])=>{if(!inW(ws))return;const x=map(f),y=map(t);if(x===y){node(x,{kind:'w'}).inner+=u;return}edge(x,y,u,a,n,'int',ws)});
+  CH.exits.forEach(([f,ep,u,a,n,ws])=>{if(!inW(ws)||(ep==='X:Swaps (churn)'&&!$('#showswap').checked))return;const cat=ep.startsWith('X:ext:')?'External wallets':ep.slice(2);node(ep,{kind:'x',cat,label:cat});edge(map(f),ep,u,a,n,'exit',ws)});
+  const showIn=$('#showin').checked;CH.inflows.forEach(([f,t,u,a,n,ws])=>{if(!inW(ws)||(f!=='SRC'&&!showIn))return;const id=f==='SRC'?'SRC':f==='O:small'?'O:small':'O:'+f;
+    node(id,{kind:'o',label:f==='SRC'?`Binance (${CH.name})`:''});edge(id,map(t),u,a,n,f==='SRC'?'root':'in',ws)});
+  Object.values(E).forEach(e=>{N[e.s]&&(N[e.s].val+=e.u);N[e.t]&&(N[e.t].val+=e.u)});
+  const mx=Math.max(...Object.values(E).map(e=>e.u),1);
+  const GENR=new Set(['layering','distribution wallet','Relay hop','Layerswap sender','seller','service deposit address','peel hop','holding output','test / small']);   // repeated roles: colour + legend say it, label on hover only
+  const nodes=Object.values(N).map(n=>{const w=W[n.id],sz=6+Math.sqrt(n.val/1e5)*2.2,addr=n.id.replace(/^O:|^X:ext:/,'');
+    const lb=n.kind==='x'?(n.id.startsWith('X:ext:')?(W[addr]?'attacker wallet':(LBL[addr]&&LBL[addr]!=='External wallets'?LBL[addr]:'External wallet')):n.cat):n.kind==='o'?(n.id==='SRC'?n.label:(LBL[addr]||'')):(n.id.startsWith('G:')?'':(w&&!PLAIN[w.role]?w.role+(w.frozen&&w.role!=='frozen'?' · frozen':''):'')+(w&&w.fbi?(w&&!PLAIN[w.role]?' · ':'')+'FBI-listed':''));
+    return {id:n.id,name:lb,_addr:n.id.startsWith('G:')||(n.id.startsWith('X:')&&!n.id.startsWith('X:ext:'))||n.id==='SRC'||n.id==='O:small'?'':addr,symbolSize:Math.min(70,sz),symbol:n.kind==='x'?'roundRect':n.kind==='o'?'diamond':'circle',
+      itemStyle:{color:n.kind==='x'?(EXC[n.cat]||EXC.OTHER):n.kind==='o'?(n.id==='SRC'?css('--ink'):EXC.S[7]):(w&&w.frozen?ROLEC.frozen:ROLEC[n.role]||EXC.OTHER)},label:{show:!!lb&&!(w&&GENR.has(w.role)&&!w.frozen),color:css('--ink'),fontSize:10},_n:n}});
+  const edges=Object.values(E).map(e=>({source:e.s,target:e.t,_e:e,lineStyle:{width:Math.max(.4,6*Math.sqrt(e.u/mx)),opacity:.55,curveness:0,
+      color:e.kind==='exit'?(EXC[N[e.t].cat]||EXC.OTHER):e.kind==='in'?EXC.S[7]:e.kind==='root'?(isDark()?'#3987e5':'#2a78d6'):WINC[e.w%WINC.length]}}));
+  if($('#lay').value==='flow'){flowLayout(nodes,E,N);                       // keep the layout's aspect = the chart box's, so ECharts scales evenly (round nodes)
+    const el=$('#netc'),vw=el.clientWidth-16-210,vh=el.clientHeight-112-16,xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y),rx=Math.max(...xs)-Math.min(...xs),ry=Math.max(...ys)-Math.min(...ys);
+    if(vw>0&&vh>0&&rx>0&&ry>0){const f=(rx/ry)*(vh/vw);nodes.forEach(n=>{n.y*=f})}}
+  nodes.forEach(n=>{if(n.id==='SRC')n.label={...n.label,position:'bottom',distance:6,align:'left',offset:[-10,0]}});   // Binance source: label under the diamond
+  curNodes=nodes;$('#netstat').textContent=`${nodes.length} nodes · ${edges.length} merged links · click a node for details (small wallets are merged into their funder)`;
+  net=net||echarts.init($('#netc'));net.clear();
+  net.setOption({tooltip:{formatter:p=>p.dataType==='edge'?`${am(p.data._e.am)}<br>${usd(p.data._e.u)} · ${p.data._e.n} transfers`:`${p.data.name?'<b>'+p.data.name+'</b><br>':''}${p.data._addr||''}<br>${usd(p.data._n.val)} flow`+(p.data._n.members.size>1?`<br>${p.data._n.members.size} wallets merged`:'')},
+    series:[{type:'graph',top:112,bottom:16,left:16,right:210,layout:$('#lay').value==='flow'?'none':'force',roam:true,draggable:true,data:nodes,links:edges,edgeSymbol:['none','arrow'],edgeSymbolSize:5,
+      force:{repulsion:140,edgeLength:[30,180],gravity:.06,friction:.2},emphasis:{focus:'adjacency',lineStyle:{width:3}},labelLayout:{hideOverlap:true}}]});
+  net.off('click');net.on('click',p=>{if(p.dataType==='node'){side(p.data._n);focusDown(p.data.id,nodes,edges)}else showEdge(p.data._e)});netHowto(nodes);net.getZr().off('click');net.getZr().on('click',ev=>{if(!ev.target)focusDown(null,nodes,edges)})}
+function wtable(a){const w=W[a];if(!w)return `<div>${aL(a)}</div><div class="note">${LBL[a]||'not an attacker wallet in this ledger'}</div>`;
+  const rows=Object.entries(w.win).flatMap(([i,x])=>Object.entries(x).filter(([k,r])=>r[0]||r[1]||r[3]).map(([k,r])=>{const win=CH.windows[i]||{from:'',to:''};
+    return `<tr><td>${win.from}→${win.to}</td><td>${k}</td><td class="n">${short_(r[0])}</td><td class="n">${short_(r[1])}</td><td class="n">${short_(r[2])}</td><td class="n"><b>${short_(r[3])}</b></td><td class="note">${r[4]||''}</td></tr>`})).join('');
+  const ins=CH.links.filter(l=>l[1]===a).sort((x,y)=>y[2]-x[2]).slice(0,8), outs=CH.links.filter(l=>l[0]===a).sort((x,y)=>y[2]-x[2]).slice(0,8), ex=CH.exits.filter(l=>l[0]===a);
+  const li=(l,k)=>`<tr><td>${aL(l[k])}</td><td class="n">${am(l[3])}</td><td class="n">${l[4]}</td></tr>`;
+  return `<div>${aL(a)}</div><div class="note">${w.role}${w.frozen?' · frozen':''}${w.created?' · created '+w.created:''} · moved ${usd(w.thru)} · holds ${am(w.held)}</div>
+   <h4>Balance per time window</h4><table><tr><th>window</th><th>asset</th><th>in</th><th>out</th><th>fees</th><th>held</th><th>status</th></tr>${rows}</table>
+   <h4>Funded by (attacker wallets)</h4><table>${ins.map(l=>li(l,0)).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Sent to (attacker wallets)</h4><table>${outs.map(l=>li(l,1)).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Exits</h4><table>${ex.map(l=>`<tr><td>${l[1].startsWith('X:ext:')?aL(l[1].slice(6)):l[1].slice(2)}</td><td class="n">${am(l[3])}</td><td class="n">${l[4]}</td></tr>`).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Largest transfers</h4><table>${(w.tx||[]).map(t=>`<tr><td>${txl(t[1])}</td><td>${t[2].slice(0,10)}…</td><td class="n">${short_(t[4])} ${t[3]}</td></tr>`).join('')}</table>`}
+function openSide(){const w=$('#sidewrap');if(w.hidden){w.hidden=false;if(net)net.resize()}}
+function focusDown(id,nodes,edges){            // click a node: light up everything downstream of it (BFS on merged links); click empty space: reset
+  const keep=new Set(),ke=new Set();
+  if(id){keep.add(id);const q=[id];while(q.length){const x=q.shift();edges.forEach(l=>{if(l.source===x){ke.add(l);if(!keep.has(l.target)){keep.add(l.target);q.push(l.target)}}})}}
+  const on=n=>!id||keep.has(n);
+  net.setOption({series:[{data:nodes.map(n=>Object.assign({},n,{itemStyle:Object.assign({},n.itemStyle,{opacity:on(n.id)?1:.07}),label:Object.assign({},n.label,{show:!!n.label.show&&on(n.id)})})),
+    links:edges.map(l=>Object.assign({},l,{lineStyle:Object.assign({},l.lineStyle,{opacity:!id?.55:ke.has(l)?.9:.03})}))}]});
+  if(!id){$('#netstat').textContent='click a node to follow its money onward · click empty space to show everything';return}
+  const ev=e=>e.u!==undefined?e.u:(typeof U==='function'?U(e.tr,e.us):0),ex={};let tot=0;
+  ke.forEach(l=>{const e=l._e;if(e&&e.kind==='exit'){const t=nodes.find(n=>n.id===l.target),c=(t&&t.name)||l.target.replace(/^X:(ext:)?/,'');ex[c]=(ex[c]||0)+ev(e);tot+=ev(e)}});
+  $('#netstat').textContent=`onward flow: ${keep.size-1} nodes downstream of the selected node · click empty space to show everything`;
+  const rows=Object.entries(ex).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<tr><td>${c}</td><td class="n">${usd(v)}</td></tr>`).join('');
+  $('#side').insertAdjacentHTML('beforeend',`<h4>Onward: exits reached downstream</h4><div class="note">${keep.size-1} downstream nodes · ${usd(tot)} into exits. May include other funds merging further down.</div><table>${rows||'<tr><td class="note">no exits reached — still held</td></tr>'}</table>`)}
+function side(n){openSide();if(n.kind!=='w'){$('#side').innerHTML=`<h3>${n.label||''}</h3><div class="note">${usd(n.val)} flow in the selected windows.</div>`+(n.id.startsWith('X:ext:')?aL(n.id.slice(6)):n.id.startsWith('O:')&&n.id!=='O:small'?aL(n.id.slice(2)):'');return}
+  const m=[...n.members];$('#side').innerHTML=(m.length>1?`<div class="note">${m.length} wallets merged here · ${usd(n.inner)} circulated between them</div>`:'')+(n.id.startsWith('G:')?'':wtable(n.id))+
+   (m.length>1?`<h4>Merged wallets</h4><div style="max-height:200px;overflow:auto">${m.slice(0,300).map(a=>`<div><a href="#" data-a="${a}" class="addr">${a}</a></div>`).join('')}</div>`:'');
+  $('#side').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#side').innerHTML=wtable(x.dataset.a)})}
+function showEdge(e){openSide();$('#side').innerHTML=`<h3>Link</h3>${aL(e.s.replace(/^O:|^X:ext:/,''))} →<br>${e.t.startsWith('X:')&&!e.t.startsWith('X:ext:')?e.t.slice(2):aL(e.t.replace(/^X:ext:/,''))}<p>${am(e.am)} · ${usd(e.u)} · ${e.n} transfers (${e.kind})</p>`}
+$('#find').onchange=()=>{const a=$('#find').value.trim();openSide();$('#side').innerHTML=wtable(a);
+  if(net){const idx=curNodes.findIndex(d=>d.id===a||d._n.members.has(a));if(idx>=0)net.dispatchAction({type:'focusNodeAdjacency',seriesIndex:0,dataIndex:idx})}};
+// ---------- CHAIN: exits ----------
+function exitsTab(){const c=$('#cat').value,R=CH.exit_rows.filter(r=>!c||r[0]===c);
+  $('#exstat').textContent=`${R.length} destinations · ${usd(R.reduce((a,r)=>a+r[3]*px(r[2]),0))}`;
+  $('#extab').innerHTML='<tr><th>category</th><th>destination</th><th>asset</th><th class="n">amount</th><th class="n">txs</th><th>windows</th><th>detail</th></tr>'+
+   (R.slice(0,1500).map(r=>`<tr><td>${r[0]}</td><td>${aL(r[1])}${LBL[r[1]]&&LBL[r[1]]!==r[0]?`<div class="note">${LBL[r[1]]}</div>`:''}</td><td>${r[2]}</td><td class="n">${fmt(r[3],2)}</td><td class="n">${r[4]}</td><td>${r[5].map(i=>(CH.windows[i]||{}).to).join(', ')}</td><td class="note">${(r[6]||'').slice(0,70)}</td></tr>`).join('')||'<tr><td class="note" colspan="7">Nothing has left this chain\'s attacker wallets yet.</td></tr>');
+  if(!CH.payouts.length)return;
+  const pt=CH.payouts.slice().sort((a,b)=>b.amt*(D.px[b.asset]||0)-a.amt*(D.px[a.asset]||0)), tot={};pt.forEach(p=>tot[p.asset]=(tot[p.asset]||0)+p.amt);
+  $('#paytab').innerHTML=`<tr><th colspan="5">${Object.entries(tot).map(([k,v])=>fmt(v,4)+' '+k).join(' · ')} — ${pt.length} payouts</th></tr><tr><th>chain</th><th>address</th><th>asset</th><th class="n">amount</th><th>window</th></tr>`+
+   pt.map(p=>{const href=p.chain==='ETH'?`https://etherscan.io/address/${p.to}`:p.chain==='BTC'?`https://mempool.space/address/${p.to}`:p.chain==='BASE'?`https://basescan.org/address/${p.to}`:'#';
+    return `<tr><td>${p.chain}</td><td><a class="addr" target="_blank" href="${href}">${p.to}</a></td><td>${p.asset}</td><td class="n">${fmt(p.amt,6)}</td><td>${(CH.windows[p.win]||{}).to||''}</td></tr>`}).join('')}
+$('#cat').onchange=exitsTab;
+// ---------- CHAIN: txs ----------
+const sh=a=>a.length>20?a.slice(0,8)+'…'+a.slice(-4):a, alab=a=>LBL[a]?`<div class="note">${LBL[a]}</div>`:'';
+const pager=(el,n,page,go)=>{const P=Math.ceil(n/200)||1;$(el).innerHTML=`page ${page+1}/${P} `+(page>0?`<button data-p="${page-1}">‹ prev</button>`:'')+(page<P-1?` <button data-p="${page+1}">next ›</button>`:'');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>go(+b.dataset.p))};
+let tpage=0;function txTab(){const q=$('#tq').value.trim(),c=$('#tc').value,w=$('#tw').value,m=+$('#tm').value,val=t=>t[5]*px(CH.assets[t[4]]);
+  let R=CH.txs.filter(t=>(c===''||t[6]==+c)&&(w===''||t[7]==+w)&&val(t)>=m&&(!q||t[0]===q||A[t[2]]===q||A[t[3]]===q));
+  R.sort($('#tsort').value==='v'?(x,y)=>val(y)-val(x):(x,y)=>y[1]-x[1]);
+  $('#tstat').textContent=`${fmt(R.length)} of ${fmt(CH.txs.length)} ledger transactions`;
+  $('#ttab').innerHTML='<tr><th>time (UTC)</th><th>tx</th><th>from</th><th>to</th><th class="n">amount</th><th>type</th><th>window</th></tr>'+(R.slice(tpage*200,tpage*200+200).map(t=>{const f=A[t[2]],to=A[t[3]];
+   return `<tr><td>${t[1]?new Date(t[1]*1000).toISOString().slice(5,19).replace('T',' '):'—'}</td><td>${txl(t[0])}</td><td><a href="#" class="addr" data-a="${f}">${sh(f)}</a>${alab(f)}</td><td><a href="#" class="addr" data-a="${to}">${sh(to)}</a>${alab(to)}${t[8]?`<div class="note">${t[8]}</div>`:''}</td><td class="n">${short_(t[5])} ${CH.assets[t[4]]}</td><td>${CH.cls[t[6]]||''}</td><td>${(CH.windows[t[7]]||{}).to||''}</td></tr>`}).join('')||'<tr><td class="note" colspan="7">No ledger transactions match.</td></tr>');
+  $('#ttab').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#tq').value=x.dataset.a;tpage=0;txTab()});
+  pager('#tpg',R.length,tpage,p=>{tpage=p;txTab()})}
+['#tq','#tc','#tw','#tm','#tsort'].forEach(s=>$(s).onchange=()=>{tpage=0;txTab()});
+// ---------- CHAIN: wallets ----------
+let wpage=0;function wlTab(){const q=$('#wq').value.trim().toLowerCase(),t=$('#wt').value,so=$('#wsort').value,hu=r=>Object.entries(r[6]||{}).reduce((a,[k,v])=>a+v*px(k),0);
+  let R=CH.wl.filter(r=>(!t||r[2]===t)&&(!q||A[r[0]].toLowerCase().includes(q)||(r[1]||'').toLowerCase().includes(q)));
+  R.sort(so==='h'?(x,y)=>hu(y)-hu(x):so==='n'?(x,y)=>y[7]-x[7]:so==='c'?(x,y)=>(y[3]||'').localeCompare(x[3]||''):(x,y)=>y[5]-x[5]);
+  $('#wstat').textContent=`${fmt(R.length)} of ${fmt(CH.wl.length)} addresses`;
+  $('#wtab').innerHTML='<tr><th>address</th><th>label / role</th><th>type</th><th>created</th><th class="n">moved $</th><th class="n">held</th><th class="n">txs</th></tr>'+R.slice(wpage*200,wpage*200+200).map(r=>`<tr data-a="${A[r[0]]}" style="cursor:pointer"><td class="addr">${A[r[0]]}</td><td>${r[1]||'<span class="note">—</span>'}${r[8]?' <b style="color:var(--bad)">FROZEN</b>':''}</td><td>${r[2]}</td><td>${r[3]||''}</td><td class="n">${usd(r[5])}</td><td class="n">${Object.keys(r[6]||{}).length?am(r[6]):''}</td><td class="n">${r[7]}</td></tr>`).join('');
+  $('#wtab').querySelectorAll('tr[data-a]').forEach(tr=>tr.onclick=()=>{const a=tr.dataset.a;$('#wside').innerHTML=wtable(a)+
+    `<h4>Ledger transactions</h4><table>${CH.txs.filter(t=>A[t[2]]===a||A[t[3]]===a).sort((x,y)=>y[1]-x[1]).slice(0,60).map(t=>`<tr><td>${t[1]?new Date(t[1]*1000).toISOString().slice(5,16).replace('T',' '):'—'}</td><td>${txl(t[0])}</td><td>${A[t[2]]===a?'→ '+sh(A[t[3]]):'← '+sh(A[t[2]])}</td><td class="n">${short_(t[5])} ${CH.assets[t[4]]}</td><td class="note">${CH.cls[t[6]]||''}</td></tr>`).join('')}</table>`;
+    $('#wside').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#wside').innerHTML=wtable(x.dataset.a)})});
+  pager('#wpg',R.length,wpage,p=>{wpage=p;wlTab()})}
+['#wq','#wt','#wsort'].forEach(s=>$(s).onchange=()=>{wpage=0;wlTab()});
+// ---------- shared ----------
+document.addEventListener('click',e=>{const d=$('#wdet');if(d.open&&!d.contains(e.target))d.open=false});
+$('#sclose').onclick=()=>{$('#sidewrap').hidden=true;if(net)net.resize()};
+const redraw=()=>{EXC=excFor();ROLEC=ROLEMAP();WINC=wincFor();chainBar();if(cur==='all')drawAll();else if(cur==='hold')drawHold();else{drawLegend();setTab(tab)}};
+$('#theme').value=theme;$('#theme').onchange=()=>{const t=$('#theme').value;setTheme(t);try{localStorage.setItem('fundflow-theme',t)}catch(e){}redraw()};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if($('#theme').value==='auto')redraw()});
+setChain('all');
+</script></body></html>

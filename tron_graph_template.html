@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eagle Eye — Binance Tron Fund Flow</title>
+<script>/*__ECHARTS__*/</script>
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#1d1d1f;--mute:#6b6b70;--line:#e3e3e0;--acc:#2f6fdb;--warn:#c2410c;--bad:#b91c1c;--ok:#15803d}
+:root{color-scheme:light dark}:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark;--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.topbar{padding:6px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--mute);border-bottom:1px solid var(--line)}header{padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+h1{font-size:22px;margin:0}.sub{color:var(--mute);font-size:12px}
+nav{display:flex;gap:4px;padding:8px 18px;border-bottom:1px solid var(--line)}nav button{background:none;border:1px solid transparent;color:var(--ink);padding:6px 12px;border-radius:6px;cursor:pointer}
+nav button.on{background:var(--panel);border-color:var(--line);font-weight:600}
+section{display:none;padding:14px 18px}section.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}.kpi b{display:block;font-size:18px}.kpi span{color:var(--mute);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:14px}
+.row{display:flex;gap:14px}.grow{flex:1;min-width:0}
+#netc{height:calc(100vh - 200px);min-height:420px}#sidewrap{width:420px;max-height:calc(100vh - 230px);overflow:auto}#sidewrap[hidden]{display:none}.chart{position:relative;padding-bottom:104px}
+.morebox{position:absolute;right:16px;top:46px;z-index:6;width:min(700px,60%);max-height:64%;overflow:auto;background:var(--bg,#fff);border:1px solid var(--line,#ddd);border-radius:8px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:12px}
+.morebox td,.morebox th{padding:2px 6px;white-space:nowrap}
+.asof{position:absolute;left:18px;bottom:14px;z-index:3;font-size:11px;line-height:1.4;color:var(--muted,#777);max-width:52%}
+.asof b{color:var(--ink)}
+.asof ul.howto{list-style:none;margin:0 0 4px;padding:0}
+.asof ul.howto li{padding-left:10px;text-indent:-10px;margin-bottom:1px}
+.asof ul.howto li::before{content:'* ';color:var(--ink);font-weight:700}
+.nettitle{position:absolute;top:12px;left:18px;z-index:3;max-width:50%}
+.netleg{top:10px;right:16px;left:auto;bottom:auto;max-width:430px;background:var(--bg,#fff);opacity:.95;padding:4px 6px;border-radius:6px}
+.netleg .legend{justify-content:flex-end}
+#net .ctl .netmore{display:none}
+#net .ctl.showmore .netmore{display:inline-flex}
+.asof .legend{display:flex;flex-wrap:wrap;gap:3px 10px;font-size:11px;color:var(--ink)}
+.asof .legend span{display:inline-flex;align-items:center;gap:4px}
+.asof .legend i{display:inline-block;width:9px;height:9px;border-radius:50%}.credit{position:absolute;right:18px;bottom:14px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);text-decoration:none}.credit .av{width:60px;height:60px;border-radius:12px;object-fit:cover;image-rendering:pixelated;display:block}.credit .h{display:flex;align-items:center;gap:5px;font-weight:700;font-size:13px;letter-spacing:.1px;line-height:1}.credit .xl{width:12px;height:12px;fill:currentColor}.wdet{position:relative}.wdet summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;background:var(--panel)}.wdet summary::-webkit-details-marker{display:none}.wdet summary::after{content:' ▾'}.wpop{position:absolute;z-index:5;top:110%;left:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:280px;box-shadow:0 6px 18px rgba(0,0,0,.18)}.x{float:right;background:none;border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:2px 8px;cursor:pointer}#side table{font-size:11.5px}#side td,#side th{padding:4px 5px}
+.ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:13px}
+.ctl input[type=text]{width:330px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+select,input{font:inherit}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600;position:sticky;top:0;background:var(--panel)}td.n{text-align:right;font-variant-numeric:tabular-nums}
+code,.addr{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all}a{color:var(--acc)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mute)}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.note{color:var(--mute);font-size:12px}
+@media (max-width:900px){.row{flex-direction:column}#sidewrap{width:auto;max-height:none}.ctl input[type=text]{width:100%}}
+</style></head><body>
+<div class="topbar"><label>theme <select id="theme"><option value="auto">auto</option><option value="light">light</option><option value="dark">dark</option></select></label><span id="built"></span></div>
+<header><h1>Binance Hack — Tron Fund Flow</h1><div class="sub" style="margin-top:4px">Built from raw on-chain data, indexed independently; cross-chain hops cross-checked against bridge records. All figures in native units; USD at theft-time prices, for scale only. Each chain shows its own &quot;as of&quot; time.</div></header>
+<nav><button data-t="flow" class="on">Flow</button><button data-t="net">Network</button><button data-t="exits">Exits</button><button data-t="txs">Txs</button><button data-t="wallets">Wallets</button><button data-t="acct">Accounting</button></nav>
+<section id="flow" class="on"><div class="kpis" id="kpis"></div>
+  <div class="card chart"><div id="sankey" style="height:520px"></div><a class="credit" href="https://x.com/SomaXBT" target="_blank" rel="noopener"><img class="av" src="/*__AVATAR__*/" alt="SomaXBT"><span class="h"><svg class="xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>SomaXBT</span></a><div class="note">Pool = stolen minus frozen. "Residual" = price effect of selling USDT for TRX (~2.5–3 TRX/USDT) and fees, valued at the fixed display price.</div></div>
+  <div class="card chart"><div id="bars" style="height:340px"></div><a class="credit" href="https://x.com/SomaXBT" target="_blank" rel="noopener"><img class="av" src="/*__AVATAR__*/" alt="SomaXBT"><span class="h"><svg class="xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>SomaXBT</span></a></div></section>
+<section id="net"><div class="ctl">
+  <label>Show wallets moving ≥ <select id="thr"><option value="0">all</option><option value="10000">$10k</option><option value="50000">$50k</option><option value="250000" selected>$250k</option><option value="1000000">$1M</option></select></label>
+  <details id="wdet" class="wdet"><summary id="wsum">windows: all</summary><div class="wpop"><div id="wsel"></div><div id="wleg" class="legend" style="margin-top:6px"></div></div></details>
+  <label>layout <select id="lay"><option value="flow" selected>flow (left → right)</option><option value="force">force</option></select></label> <label><input type="checkbox" id="showin"> outside inflows</label> <label><input type="checkbox" id="showswap"> swap churn</label>
+  <input type="text" id="find" placeholder="find address (Tron T…)">
+  <span class="note" id="netstat"></span></div>
+  <div class="legend" id="legend"></div>
+  <div class="row"><div class="grow card chart"><div id="netc"></div><a class="credit" href="https://x.com/SomaXBT" target="_blank" rel="noopener"><img class="av" src="/*__AVATAR__*/" alt="SomaXBT"><span class="h"><svg class="xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>SomaXBT</span></a></div><div id="sidewrap" class="card" hidden><button class="x" id="sclose">✕ hide</button><div id="side"></div></div></div></section>
+<section id="exits"><div class="ctl"><label>Category <select id="cat"></select></label><span class="note" id="exstat"></span></div>
+  <div class="card" style="max-height:52vh;overflow:auto"><table id="extab"></table></div>
+  <h3>THORChain payouts</h3><div class="card" style="max-height:40vh;overflow:auto"><table id="paytab"></table></div></section>
+<section id="txs"><div class="ctl"><input type="text" id="tq" placeholder="address (from or to) or tx hash"><label>type <select id="tc"></select></label><label>window <select id="tw"></select></label>
+  <label>min $ <select id="tm"><option value="0">any</option><option value="1000">1k</option><option value="10000">10k</option><option value="100000" selected>100k</option><option value="1000000">1M</option></select></label>
+  <label>sort <select id="tsort"><option value="t">time</option><option value="v">amount</option></select></label><span class="note" id="tstat"></span></div>
+  <div class="card" style="max-height:68vh;overflow:auto"><table id="ttab"></table></div><div class="ctl" id="tpg"></div></section>
+<section id="acct"><div class="note" id="acctnote" style="margin-bottom:8px"></div><div style="overflow:auto"><table id="accttab"></table></div></section>
+<section id="wallets"><div class="ctl"><input type="text" id="wq" placeholder="search address or label"><label>type <select id="wt"><option value="">all</option><option>operator</option><option>exit</option><option>outside</option><option>service</option><option>source</option><option>counterparty</option></select></label>
+  <label>sort <select id="wsort"><option value="m">moved $</option><option value="h">held TRX</option><option value="n">txs</option><option value="c">created</option></select></label><span class="note" id="wstat"></span></div>
+  <div class="row"><div class="grow card" style="max-height:70vh;overflow:auto"><table id="wtab"></table></div><div id="wside" class="card" style="width:460px;max-height:70vh;overflow:auto"><div class="note">Click a row for details.</div></div></div><div class="ctl" id="wpg"></div></section>
+<script>
+const D=/*__DATA__*/null; let net=null, curNodes=[];
+// theme: auto (follows the system) / light / dark; remembered per browser when storage is available
+const setTheme=t=>{if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)};
+let theme='auto';try{theme=localStorage.getItem('tronleg-theme')||'auto'}catch(e){}setTheme(theme);
+const $=s=>document.querySelector(s), fmt=(v,d=0)=>Number(v).toLocaleString('en-US',{maximumFractionDigits:d}), usd=v=>'$'+(Math.abs(v)>=1e6?fmt(v/1e6,2)+'M':Math.abs(v)>=1e3?fmt(v/1e3,1)+'k':fmt(v,0));
+const PX=D.px, U=(t,u)=>t*PX.TRX+u*PX.USDT, css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tron=a=>`<a class="addr" target="_blank" href="https://tronscan.org/#/address/${a}">${a}</a>`, txl=h=>`<a class="addr" target="_blank" href="https://tronscan.org/#/transaction/${h}">${h.slice(0,10)}…</a>`;
+$('#built').textContent=`built ${D.built} · windows: `+D.windows.map(w=>w.from+'→'+w.to).join(' · ');
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');window.dispatchEvent(new Event('resize'));if(b.dataset.t==='net'&&!net)drawNet();if(b.dataset.t==='acct')acctTab();});
+const W=Object.fromEntries(D.wallets.map(w=>[w.id,w]));
+let ROLEC={};
+// Colour: categorical slots from the validated reference palette (dataviz skill), stepped per mode; one warm neutral family for structure/other.
+const isDark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches};
+function excFor(){const d=isDark(),S=d?['#3987e5','#d95926','#199e70','#c98500','#d55181','#008300','#9085e9','#e66767']:['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948'];
+  const STRUCT=d?'#c3c2b7':'#52514e', OTHER=d?'#7d7c75':'#a3a29b', RESID=d?'#4a4944':'#d6d5ce';
+  return {'Frozen (Tether)':S[0],'THORChain':S[1],'Chainflip':S[2],'USDT0 bridge':S[3],'JustLend':S[4],'Symbiosis':S[5],'Still held':S[6],
+          'Bitget Wallet Swap Bridge':S[7],'ChangeHero':OTHER,'Bridgers':OTHER,'External wallets':OTHER,'Other contracts':OTHER,'Swaps (churn)':OTHER,STRUCT,OTHER,RESID}}
+let EXC=excFor();
+function rolecFor(){const E=excFor();return {'theft wallet':E['Bitget Wallet Swap Bridge'],'theft 2nd hop (sold USDT)':E['Bitget Wallet Swap Bridge'],'frozen':E['Frozen (Tether)'],
+  'pot (TRX bought with stolen USDT)':E['Still held'],'tranche':E['Still held'],'distribution wallet':E['JustLend'],'consolidation (THORChain)':E['THORChain'],
+  'collection point':E['USDT0 bridge'],'service deposit address':E.OTHER,'layering':E.OTHER}}
+ROLEC=rolecFor();
+// ---------- FLOW ----------
+const stolenUSD=D.stolen.USDT*PX.USDT+D.stolen.TRX*PX.TRX, frozen=(D.held.USDT||[0,0])[1], heldT=(D.held.TRX||[0,0])[0], heldU=(D.held.USDT||[0,0])[0];
+const catU={};D.exit_rows.forEach(r=>{catU[r[0]]=(catU[r[0]]||0)+r[3]*PX[r[2]]});
+const exited=Object.values(catU).reduce((a,b)=>a+b,0), resid=stolenUSD-frozen-heldT*PX.TRX-heldU-exited;
+$('#kpis').innerHTML=[[usd(stolenUSD),`stolen on Tron (${fmt(D.stolen.USDT)} USDT + ${fmt(D.stolen.TRX)} TRX)`],[usd(frozen),`frozen by Tether (${fmt(frozen)} USDT)`],
+ [fmt(heldT)+' TRX',`still held (${usd(heldT*PX.TRX)}) + ${fmt(heldU)} USDT`],[usd(exited),'left the Tron tree (all exits, excl. swap churn)'],
+ [fmt(D.wallets.length),`operator wallets in the ledger (${D.windows.length} windows)`]].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+// ---------- FLOW: click a box -> drill down one level (where that box's money went next) ----------
+function acctTab(){const X=(typeof CH!=='undefined'&&CH)||D, A=X.accounting, P=k=>typeof px==='function'?px(k):((typeof PX!=='undefined'&&PX[k])||(String(k).startsWith('USD')?1:0));
+  if(!A){$('#acctnote').textContent='no data yet';$('#accttab').innerHTML='';return}
+  const am=d=>Object.entries(d||{}).filter(([k,v])=>v>0.005).sort((a,b)=>b[1]*P(b[0])-a[1]*P(a[0])).map(([k,v])=>`${fmt(v,2)} ${k}`).join(' + ')||'—';
+  const su=d=>Object.entries(d||{}).reduce((a,[k,v])=>a+v*P(k),0);
+  $('#acctnote').textContent=`What LEFT the Tron tree vs what was RECEIVED on the other side, per route, in native units (USD only for scale). As of ${A.built||''}. Refunds and retries are separate lines, nothing is netted silently.`;
+  const R=Object.entries(A.routes).sort((a,b)=>su(b[1].sent)-su(a[1].sent));
+  $('#accttab').innerHTML='<tr><th>route</th><th>sent from Tron</th><th>received (chain · asset · amount · recipients)</th><th>refunded to Tron</th><th>fees / other</th><th>not resolved yet</th></tr>'+
+   R.map(([r,o])=>`<tr><td><b>${r}</b><div class="note">${usd(su(o.sent))}</div></td><td>${am(o.sent)}</td><td>${(o.received||[]).sort((a,b)=>b[2]*P(b[1])-a[2]*P(a[1])).map(([c,a,v,n])=>`<div>${c} · <b>${fmt(v,v>1000?2:4)} ${a}</b> <span class="note">${n} recipients</span></div>`).join('')||'<span class="note">Tron-side destination</span>'}</td>
+     <td>${am(o.refunded)}${o.held_in_bridge&&Object.keys(o.held_in_bridge).length?`<div><b>held in bridge:</b> ${am(o.held_in_bridge)} <span class="note">not delivered — likely frozen</span></div>`:''}</td><td>${am(o.fees)}${Object.keys(o.other||{}).length?'<div class="note">'+Object.entries(o.other).map(([k,v])=>k+' ≈'+usd(v)).join(' · ')+'</div>':''}</td><td>${o.unresolved?am(o.unresolved):'<span class="note">n/a</span>'}</td></tr>`).join('')+
+   `<tr><td><b>Still on Tron</b></td><td colspan="5">${(A.held||[]).map(([a,h,z])=>`${a}: held ${fmt(h,2)} · frozen ${fmt(z,2)}`).join(' &nbsp;|&nbsp; ')}</td></tr>`}
+let HOWTO='';
+function asofBox(){const X=(typeof CH!=='undefined'&&CH)||D, host=$('#sankey')&&$('#sankey').parentElement;if(!host||!X||!X.windows)return;
+  let b=host.querySelector('.asof');if(!b){host.insertAdjacentHTML('beforeend','<div class="asof"></div>');b=host.querySelector('.asof')}
+  const w=X.windows, last=w.length?w[w.length-1].to:'', first=w.length?w[0].from:'', built=(typeof D!=='undefined'&&D.built)||'';
+  const howto=($('#drillbar')&&!$('#drillbar').hidden&&HOWTO)?`<div style="margin-bottom:4px;max-width:520px">${HOWTO}</div>`:'';
+  b.innerHTML=howto+`<b>Data as of ${last} UTC</b> (activity since ${first} UTC)<br>${fmt((X.wallets||[]).length)} attacker wallets traced · page built ${built}<br>Amounts in native units · USD at theft-time prices, for scale only`}
+function hookSankey(){HOWTO='';asofBox();if($('#sankey').style.height!=='520px'){$('#sankey').style.height='520px';const c0=echarts.getInstanceByDom($('#sankey'));if(c0)c0.resize()}const c=echarts.getInstanceByDom($('#sankey'));if(!c)return;c.off('click');c.on('click',p=>{if(p.dataType==='node')drill(p.name)});
+  if(!$('#drillbar'))$('#sankey').insertAdjacentHTML('beforebegin','<div id="drillbar" style="margin:4px 0 6px" hidden><button id="drillback">← back to full flow</button> <b id="drilltitle"></b> <span class="note" id="drillnote"></span></div>');
+  $('#drillbar').hidden=true;$('#drillback').onclick=()=>drawFlow()}
+const SVCC={'THORChain':'#F58518','Relay':'#4C78A8','Symbiosis':'#54A24B','Chainflip':'#2BB39B','USDT0 bridge':'#E4B200','Across':'#B279A2','Bitget Wallet Swap Bridge':'#E45756',
+               'Bridgers':'#9D755D','NEAR Intents':'#72B7B2','JustLend':'#FF9DA6','HitBTC (via a service account)':'#8C6D31','Gate (via a service account)':'#BCBD22','ChangeHero':'#17BECF','FixedFloat':'#7F7F7F',
+               'CCTP (Circle)':'#2E8B57','Layerswap':'#E377C2','Swaps (output to be traced)':'#BAB0AC','Unidentified services':'#A0A0A0','OKX (exchange)':'#7F7F7F'};   // Solana services (11-03)
+function exLink(a){return /^0x[0-9a-fA-F]{40}$/.test(a)?'https://etherscan.io/address/'+a:/^(bc1|[13])/.test(a)?'https://mempool.space/address/'+a:/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)?'https://tronscan.org/#/address/'+a:''}
+function txLink(chain,tx){if(!tx)return '';const c=String(chain);return /Ethereum|^ETH/.test(c)?'https://etherscan.io/tx/'+tx:/Arbitrum/.test(c)?'https://arbiscan.io/tx/'+tx:/Base|^BASE/.test(c)?'https://basescan.org/tx/'+tx:/Bitcoin|^BTC/.test(c)?'https://mempool.space/tx/'+tx:''}
+function showReceipts(addr){const X=(typeof CH!=='undefined'&&CH)||D, al=String(addr).toLowerCase();
+  const R=(X.bridge_out||[]).filter(r=>String(r[2]).toLowerCase()===al).sort((a,b)=>(a[9]||0)-(b[9]||0));
+  const P=(X.payouts||[]).filter(p=>String(p.to).toLowerCase()===al);
+  const host=$('#sankey').parentElement;let b=host.querySelector('.morebox');if(!b){host.insertAdjacentHTML('beforeend','<div class="morebox"></div>');b=host.querySelector('.morebox')}
+  const u=exLink(addr), tot={};R.forEach(r=>tot[r[3]]=(tot[r[3]]||0)+(r[4]||0));P.forEach(p=>tot[p.asset]=(tot[p.asset]||0)+p.amt);
+  const t=ts=>ts?new Date(ts*1000).toISOString().slice(5,16).replace('T',' '):'—', trs=a=>a?`<a href="https://tronscan.org/#/address/${a}" target="_blank" rel="noopener">${a.slice(0,8)}…${a.slice(-4)}</a>`:'—', ttx=h=>h?`<a href="https://tronscan.org/#/transaction/${h}" target="_blank" rel="noopener">${h.slice(0,8)}…</a>`:'—';
+  b.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b>How this address received</b><button class="x">✕</button></div>
+    <div class="addr" style="margin-bottom:4px">${u?`<a href="${u}" target="_blank" rel="noopener">${addr}</a>`:addr}</div>
+    <div class="note" style="margin-bottom:8px">${R.length+P.length} payment${R.length+P.length===1?'':'s'} from the Tron tree · received ${Object.entries(tot).map(([k,v])=>fmt(v,v>1000?0:4)+' '+k).join(' + ')}</div>`+
+    (R.length?`<button class="tg" style="margin:2px 0 6px">▸ Show payments (${R.length})</button><table class="rc" style="width:100%" hidden><tr><th>time (UTC)</th><th>from (Tron)</th><th>deposit tx</th><th class="n">sent</th><th class="n">received</th><th>payout tx</th></tr>${R.map(r=>`<tr><td>${t(r[9])}</td><td class="addr">${trs(r[8])}</td><td class="addr">${ttx(r[7])}</td><td class="n">${fmt(r[12]||0,0)} ${r[11]||''}</td><td class="n">${fmt(r[4]||0,(r[4]||0)>1000?0:4)} ${r[3]}</td><td class="addr">${r[10]?(txLink(r[1],r[10])?`<a href="${txLink(r[1],r[10])}" target="_blank" rel="noopener">${String(r[10]).slice(0,10)}…</a>`:String(r[10]).slice(0,10)+'…'):'—'}</td></tr>`).join('')}</table>`:'')+
+    (P.length?`<div class="note" style="margin-top:6px">THORChain payouts: ${P.map(p=>fmt(p.amt,4)+' '+p.asset).join(' · ')} (window ${P.map(p=>((X.windows||[])[p.win]||{}).to||'').join(', ')}) — per-deposit detail in the THORChain records</div>`:'');
+  b.hidden=false;b.querySelector('.x').onclick=()=>{b.hidden=true};const tg=b.querySelector('.tg'),rc=b.querySelector('table.rc');if(tg&&rc)tg.onclick=()=>{rc.hidden=!rc.hidden;tg.textContent=(rc.hidden?'▸ Show':'▾ Hide')+` payments (${R.length})`}}
+function showMore(title,rows){const host=$('#sankey').parentElement;let b=host.querySelector('.morebox');if(!b){host.insertAdjacentHTML('beforeend','<div class="morebox"></div>');b=host.querySelector('.morebox')}
+  const R=rows.slice().sort((x,y)=>y[1]-x[1]);
+  b.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>${title}</b><button class="x">✕</button></div><div class="note" style="margin-bottom:6px">${R.length} addresses · ${usd(R.reduce((a,r)=>a+r[1],0))} · sorted by amount</div>`+
+    `<table style="width:100%">${R.map(([a,v],i)=>{const u=exLink(a);return `<tr><td class="note">${i+1}</td><td class="addr"><a href="#" data-rcpt="${a}">${a}</a></td><td class="n">${usd(v)}</td></tr>`}).join('')}</table>`;
+  b.hidden=false;b.querySelector('.x').onclick=()=>{b.hidden=true};b.querySelectorAll('a[data-rcpt]').forEach(x=>x.onclick=e=>{e.preventDefault();showReceipts(x.dataset.rcpt)})}
+function drill(name){
+  const X=(typeof CH!=='undefined'&&CH)||D, P=k=>typeof px==='function'?px(k):((typeof PX!=='undefined'&&PX[k])||(String(k).startsWith('USD')?1:0));
+  let NOGROUP=false,ORDER=null,FIXED=false,WAM={};const NC={},MORE={};HOWTO='';{const mb=$('#sankey').parentElement.querySelector('.morebox');if(mb)mb.hidden=true}const BO=X.bridge_out||[], VIA=new Set(BO.map(r=>r[0]).concat(['THORChain'])), n=new Set(), L=[], lab={};
+  const add=(s,t,v)=>{if(v>0.5){n.add(s);n.add(t);L.push({source:s,target:t,value:Math.round(v)})}};
+  const sh=a=>a&&a.length>18?a.slice(0,8)+'…'+a.slice(-4):a, hv=h=>Array.isArray(h)?(h[0]||0)*P('TRX')+(h[1]||0)*P('USDT'):Object.entries(h||{}).reduce((a,[k,v])=>a+v*P(k),0);
+  const catU={};(X.exit_rows||[]).forEach(r=>{catU[r[0]]=(catU[r[0]]||0)+r[3]*P(r[2])});
+  const top=(src,rows,k)=>{rows.sort((a,b)=>b[1]-a[1]);rows.slice(0,k).forEach(([id,v])=>{lab[id]=sh(id)+(WAM[id]?' ('+Object.entries(WAM[id]).sort((a,b)=>b[1]*P(b[0])-a[1]*P(a[0])).map(([a,x])=>`${fmt(x,x>1000?0:x>1?2:4)} ${a}`).join(' + ')+')':` (${usd(v)})`);add(src,id,v)});const rest=rows.slice(k);if(rest.length){const id=`${src} · ${rest.length} more`;MORE[id]=rest.map(([a,v])=>[a,v]);lab[id]=`${rest.length} more addresses (${usd(rest.reduce((a,x)=>a+x[1],0))})`;add(src,id,rest.reduce((a,x)=>a+x[1],0))}};
+  const bridge=(b,deep)=>{let rows=b==='THORChain'?(X.payouts||[]).map(p=>[b,p.chain,p.to,p.asset,p.amt,p.amt*P(p.asset),'payout']):BO.filter(r=>r[0]===b);
+    const g={},AM={};let res=0;rows.forEach(r=>{if(r[2]&&!/refund|held|fail|pending|not resolved|in flight|in transit|revert/i.test(r[1])){AM[r[2]]=AM[r[2]]||{};AM[r[2]][r[3]]=(AM[r[2]][r[3]]||0)+(r[4]||0)}const k=`${b} → ${r[1]}${r[2]&&r[1]!==r[3]?' · '+r[3]:''}`;g[k]=g[k]||{v:0,a:{},amt:0,as:r[3]};g[k].v+=r[5];g[k].amt+=r[4];res+=r[5];if(r[2])g[k].a[r[2]]=(g[k].a[r[2]]||0)+r[5]});
+    WAM=AM;Object.entries(g).sort((a,b)=>b[1].v-a[1].v).forEach(([k,o])=>{if(/refund|held|fail|pending|not resolved|in flight|in transit|revert/i.test(k))return;lab[k]=k.slice(b.length+3)+` (${fmt(o.amt,o.amt>1000?0:3)}${k.includes(' · ')?'':' '+o.as})`;add(b,k,o.v);if(deep&&Object.keys(o.a).length)top(k,Object.entries(o.a),8)});
+    return res};
+  let title=name, note='';
+  if(VIA.has(name)){const r=bridge(name,true);FIXED=true;HOWTO=`<b>How to read:</b> ${name} → destination chain → receiving wallets, largest first (amount received in brackets). Click a wallet for how it received; click “N more” for the rest.`;note=''}
+  else if(/Laundering pool/.test(name)){const XC=new Set(['THORChain','Relay','Layerswap','CCTP (Circle)','Symbiosis','Chainflip','USDT0 bridge','Across','Bridgers','NEAR Intents','Bitget Wallet Swap Bridge','Bitget Wallet swap → bridge (via TM8uyBjR)']),
+      CN=(X.name||'Tron'),LEFT=`Left ${CN} (bridges)`,STAY=`Stayed on ${CN} (exchanges, services, DeFi)`,CHN={ETH:'Ethereum',BTC:'Bitcoin',BASE:'Base',ZEC:'Zcash'};let lv=0,sv=0;NOGROUP=true;
+    const SVC=Object.assign({},SVCC);
+    const SKIP=/refund|held|fail|pending|not resolved|in flight|in transit|revert/i;let br=[], st=[];
+    Object.entries(catU).forEach(([c,v])=>{
+      if(!XC.has(c)){st.push({c,v});return}
+      const rows=c==='THORChain'?(X.payouts||[]).map(p=>['THORChain',p.chain,p.to,p.asset,p.amt,p.amt*P(p.asset)]):BO.filter(r=>r[0]===c);
+      const g={};rows.forEach(r=>{if(SKIP.test(r[1]))return;const ch=CHN[String(r[1]).split(' ')[0]]||String(r[1]).split(' ')[0];const k=`${c} → ${ch}`;
+        g[k]=g[k]||{ch,v:0,as:{}};g[k].v+=r[5];g[k].as[r[3]]=(g[k].as[r[3]]||0)+r[4]});
+      const del=Object.values(g).reduce((a,o)=>a+o.v,0);br.push({c,v:del>0?del:v,g,known:del>0})});
+    br.sort((a,b)=>b.v-a.v);st.sort((a,b)=>b.v-a.v);
+    {const all=br.reduce((a,b)=>a+b.v,0)+st.reduce((a,b)=>a+b.v,0), thr=all*0.006, merge=(arr,label,cond)=>{const sm=arr.filter(x=>x.v<thr&&cond(x));if(sm.length<2)return arr;
+       const m={c:label+': '+sm.map(x=>x.c.replace(/ \(.*\)$/,'')).join(' · '),v:sm.reduce((a,x)=>a+x.v,0),g:{},known:false,merged:true};SVC[m.c]='#9a9a9a';return [...arr.filter(x=>!sm.includes(x)),m]};
+     br=merge(br,'Smaller bridges',x=>!x.known);st=merge(st,'Smaller',x=>true)}
+    ORDER=[name,LEFT,STAY,...br.map(b=>b.c),...st.map(s=>s.c)];
+    br.forEach(b=>{add(name,LEFT,b.v);add(LEFT,b.c,b.v);lv+=b.v;NC[b.c]=SVC[b.c]||'#999';if(!b.merged)lab[b.c]=`${b.c} (${usd(b.v)})`;
+      if(!b.known){lab[b.c]=b.merged?`${b.c} (${usd(b.v)})`:`${b.c} (${usd(b.v)}) — destination to be resolved`;return}
+      Object.entries(b.g).sort((x,y)=>y[1].v-x[1].v).forEach(([k,o])=>{ORDER.push(k);NC[k]=NC[b.c];
+        lab[k]=`${o.ch} (`+Object.entries(o.as).sort((a,b2)=>b2[1]*P(b2[0])-a[1]*P(a[0])).map(([a,x])=>`${fmt(x,x>1000?0:2)} ${a}`).join(' + ')+')';add(b.c,k,o.v)})});
+    st.forEach(s=>{add(name,STAY,s.v);add(STAY,s.c,s.v);sv+=s.v;NC[s.c]=SVC[s.c]||'#aaa';lab[s.c]=`${s.c} (${usd(s.v)})`});
+    NC[LEFT]='#555';NC[STAY]='#aaa';NC[name]='#333';
+    lab[LEFT]=`Left ${CN} · bridges (${usd(lv)})`;lab[STAY]=`Stayed on ${CN} · exchanges, services, DeFi (${usd(sv)})`;
+    note='';HOWTO=`<b>How to read:</b> left → right — bridges (left ${CN}) vs services on ${CN}; one colour per service, ending on the chain where funds arrived. Hover to follow, click for addresses.`}
+  else if(/Still held/.test(name)){top(name,(X.wallets||[]).filter(w=>!w.frozen).map(w=>[w.id,hv(w.held)]).filter(x=>x[1]>1),15);note='attacker wallets still holding, at the last ledger cutoff'}
+  else if(/Frozen/.test(name)){top(name,(X.wallets||[]).filter(w=>w.frozen).map(w=>[w.id,hv(w.held)]).filter(x=>x[1]>1),15);note='wallets frozen by the issuer'}
+  else if(catU[name]){top(name,(X.exit_rows||[]).filter(r=>r[0]===name).reduce((m,r)=>{const i=m.findIndex(x=>x[0]===r[1]);i<0?m.push([r[1],r[3]*P(r[2])]):m[i][1]+=r[3]*P(r[2]);return m},[]),15);note='destinations on '+(X.name||'Tron')}
+  else return;
+  if(!L.length){note='nothing resolved here yet';}
+  if(!NOGROUP){const tot=L.filter(l=>l.source===name).reduce((a,l)=>a+l.value,0)||1, cut=tot*0.004, keep=[], small={};
+   L.forEach(l=>{if(l.value<cut&&!L.some(m=>m.source===l.target)){(small[l.source]=small[l.source]||[]).push(l)}else keep.push(l)});
+   Object.entries(small).forEach(([s,ls])=>{if(ls.length<2){keep.push(...ls);return}const id=`${s} · ${ls.length} smaller`;MORE[id]=ls.map(l=>[l.target.includes('|')?l.target.split('|').pop():l.target,l.value]);lab[id]=`${ls.length} smaller (${usd(ls.reduce((a,l)=>a+l.value,0))})`;
+     ls.forEach(l=>{if(!keep.some(k=>k.source===l.target||k.target===l.target))n.delete(l.target)});keep.push({source:s,target:id,value:ls.reduce((a,l)=>a+l.value,0)});n.add(id)});
+   L.length=0;L.push(...keep);[...n].forEach(x=>{if(!L.some(l=>l.source===x||l.target===x))n.delete(x)})}
+  const cols={};L.forEach(l=>{cols[l.target]=1});const fit=Math.max(420,window.innerHeight-210), tall=Math.min(fit,Math.max(420,Object.keys(cols).length*22+60));$('#sankey').style.height=tall+'px';   // always fits one laptop screen
+  const c0=echarts.getInstanceByDom($('#sankey'));if(c0)c0.dispose();
+  const ch=echarts.init($('#sankey'));
+  ch.setOption({tooltip:{trigger:'item',confine:true,formatter:p=>p.dataType==='edge'?`${lab[p.data.source]||p.data.source} → ${lab[p.data.target]||p.data.target}<br>${usd(p.data.value)}`:MORE[p.name]?`<b>${lab[p.name]||p.name}</b><br>`+MORE[p.name].slice().sort((x,y)=>y[1]-x[1]).slice(0,12).map(([a,v])=>`${a} — ${usd(v)}`).join('<br>')+(MORE[p.name].length>12?`<br><i>… click to see all ${MORE[p.name].length}</i>`:'<br><i>click to list them</i>'):`${p.name}`},
+    series:[{type:'sankey',left:8,right:FIXED?330:250,top:8,bottom:8,nodeAlign:(ORDER||FIXED)?'left':'justify',
+      data:(ORDER?[...ORDER.filter(x=>n.has(x)),...[...n].filter(x=>!ORDER.includes(x))]:[...n]).map(x=>({name:x,itemStyle:{color:NC[x]||(!ORDER&&SVCC[name]?SVCC[name]:null)||EXC[x]||EXC[x.split(' → ')[0]]||EXC.STRUCT}})),
+      links:ORDER?L.map(l=>Object.assign({},l,{lineStyle:{color:NC[l.target]&&!/^(Left Tron|Stayed on Tron)/.test(l.target)?NC[l.target]:(NC[l.source]&&l.source!==name?NC[l.source]:'#cfcfcf'),opacity:.55}})):(SVCC[name]?L.map(l=>Object.assign({},l,{lineStyle:{color:SVCC[name],opacity:.45}})):L),
+      emphasis:{focus:ORDER?'trajectory':'adjacency',lineStyle:{opacity:.85}},blur:{lineStyle:{opacity:.08},itemStyle:{opacity:.25}},nodeGap:Math.max(4,Math.min(ORDER?14:10,Math.floor(tall/Math.max(1,Object.keys(cols).length)/3))),layoutIterations:(ORDER||FIXED)?0:64,
+      label:{color:css('--ink'),fontSize:11,width:FIXED?320:240,overflow:'truncate',formatter:p=>lab[p.name]||p.name},lineStyle:{color:'target',opacity:.38}}]});
+  ch.on('click',p=>{if(p.dataType!=='node')return;if(MORE[p.name]){showMore(lab[p.name]||p.name,MORE[p.name]);return}const nm=p.name.includes('|')?p.name.split('|').pop():p.name;if(nm!==name&&(VIA.has(nm)||catU[nm]))drill(nm);else if(/^(0x[0-9a-fA-F]{40}|T[1-9A-HJ-NP-Za-km-z]{33}|bc1|[13][a-km-zA-HJ-NP-Z1-9]{25,34}|\d{3,9}$)/.test(nm))showReceipts(nm);else if(false)window.open(nm.startsWith('0x')?'https://etherscan.io/address/'+nm:nm.startsWith('T')?'https://tronscan.org/#/address/'+nm:'https://mempool.space/address/'+nm,'_blank')});
+  $('#drillbar').hidden=false;$('#drilltitle').textContent=title;$('#drillnote').textContent=note?' '+note:'';window.__drill=name;asofBox()}
+window.addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if(window.__drill&&$('#drillbar')&&!$('#drillbar').hidden)drill(window.__drill)},250)});
+function drawFlow(){setTimeout(hookSankey,0);['#sankey','#bars'].forEach(s=>{const c=echarts.getInstanceByDom($(s));if(c)c.dispose()});const n=new Set(),L=[],add=(s,t,v)=>{if(v>0){n.add(s);n.add(t);L.push({source:s,target:t,value:Math.round(v)})}};
+ add('Binance (Tron)','Stolen USDT',D.stolen.USDT);add('Binance (Tron)','Stolen TRX',D.stolen.TRX*PX.TRX);add('Stolen USDT','Frozen (Tether)',frozen);
+ add('Stolen USDT','Laundering pool',D.stolen.USDT-frozen);add('Stolen TRX','Laundering pool',D.stolen.TRX*PX.TRX);
+ add('Laundering pool','Still held',heldT*PX.TRX+heldU);
+ Object.entries(catU).forEach(([c,v])=>add('Laundering pool',c,v));if(resid>0)add('Laundering pool','Residual (price/slippage/fees)',resid);
+ const pc={};D.payouts.forEach(p=>{const k=p.asset==='ETH'?'ETH payouts':p.asset==='BTC'?'BTC payouts':p.asset==='ZEC'?'ZEC payouts':'Stablecoin payouts';pc[k]=(pc[k]||0)+p.amt*(PX[p.asset]||0)});
+ Object.entries(pc).forEach(([k,v])=>add('THORChain',k,v));
+ echarts.init($('#sankey')).setOption({tooltip:{trigger:'item',formatter:p=>p.dataType==='edge'?`${p.data.source} → ${p.data.target}<br>${usd(p.data.value)}`:`${p.name}`},
+  series:[{type:'sankey',data:[...n].map(x=>({name:x,itemStyle:{color:EXC[x]||(x.includes('payouts')?EXC.THORChain:x.startsWith('Residual')?EXC.RESID:EXC.STRUCT)}})),links:L,
+  emphasis:{focus:'adjacency'},nodeGap:12,label:{color:css('--ink'),fontSize:12},lineStyle:{color:'target',opacity:.38}}]});
+ const fold=c=>EXC[c]===EXC.OTHER?'Other (ChangeHero, external wallets, contracts)':c, BW={};D.by_win_cat.forEach(([i,c,v])=>{const k=fold(c);BW[k]=BW[k]||{};BW[k][i]=(BW[k][i]||0)+v});
+ const cats=Object.keys(BW);
+ echarts.init($('#bars')).setOption({title:{text:'Exits per ledger window (USD, display)',textStyle:{fontSize:13,color:css('--ink')}},tooltip:{trigger:'axis',valueFormatter:usd},legend:{top:22,textStyle:{color:css('--mute')}},grid:{top:70,left:70,right:20,bottom:30},
+  xAxis:{type:'category',data:D.windows.map(w=>w.from+'→'+w.to),axisLabel:{color:css('--mute')}},yAxis:{type:'value',axisLabel:{formatter:usd,color:css('--mute')}},
+  series:cats.map(c=>({name:c,type:'bar',stack:'x',itemStyle:{color:EXC[c]||EXC.OTHER,borderColor:css('--panel'),borderWidth:1},data:D.windows.map((_,i)=>Math.round((BW[c]||{})[i]||0))}))});}
+drawFlow();
+// ---------- NETWORK ----------
+const wins=new Set(D.windows.map((_,i)=>i));
+$('#wsel').innerHTML=D.windows.map((w,i)=>`<div><label><input type="checkbox" data-w="${i}" checked> ${w.from} → ${w.to}</label></div>`).join('');
+const wsum=()=>{$('#wsum').textContent='windows: '+(wins.size===D.windows.length?'all':wins.size+' of '+D.windows.length)};
+$('#wsel').querySelectorAll('input').forEach(c=>c.onchange=()=>{c.checked?wins.add(+c.dataset.w):wins.delete(+c.dataset.w);wsum();drawNet()});
+['#thr','#showin','#showswap','#lay'].forEach(s=>$(s).onchange=drawNet);
+function drawLegend(){$('#legend').innerHTML=Object.entries(ROLEC).map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')+Object.entries(EXC).filter(([k,c])=>!['STRUCT','OTHER','RESID','Frozen (Tether)','Still held'].includes(k)&&(c!==EXC.OTHER||k==='External wallets')).map(([k,c])=>`<span><i style="background:${c};border-radius:2px"></i>${k}</span>`).join('');
+ $('#wleg').innerHTML=('<span>link colour by window:</span>'+D.windows.map((w,i)=>`<span><i style="background:${WINC[i%WINC.length]};border-radius:0;height:3px;width:16px"></i>${w.to}</span>`).join(''))}
+const inW=ws=>ws.some(w=>wins.has(w));
+// windows are ordered in time -> one-hue sequential ramp (blue), stepped per mode
+const wincFor=()=>isDark()?['#184f95','#256abf','#3987e5','#6da7ec','#9ec5f4','#cde2fb']:['#86b6ef','#5598e7','#2a78d6','#1c5cab','#104281','#0d366b'];
+let WINC=wincFor();
+drawLegend();
+function flowLayout(nodes,E,N){   // columns = hops from the Binance source / theft wallet; exits in the last column; rows ordered by parents
+  const inc={},out={};Object.values(E).forEach(e=>{if(e.kind==='exit')return;(out[e.s]=out[e.s]||[]).push(e.t);(inc[e.t]=inc[e.t]||[]).push(e.s)});
+  const d={},q=[];nodes.forEach(n=>{const k=N[n.id].kind;if(n.id==='SRC'||(k==='w'&&!(inc[n.id]||[]).some(s=>N[s]&&N[s].kind==='w'||s==='SRC'))){d[n.id]=n.id==='SRC'?0:1;q.push(n.id)}});
+  while(q.length){const a=q.shift();(out[a]||[]).forEach(b=>{if(N[b]&&N[b].kind==='w'&&d[b]===undefined){d[b]=d[a]+1;q.push(b)}})}
+  let mx=0;nodes.forEach(n=>{if(N[n.id].kind==='w'){if(d[n.id]===undefined)d[n.id]=1;mx=Math.max(mx,d[n.id])}});
+  nodes.forEach(n=>{const k=N[n.id].kind;if(k==='x')d[n.id]=mx+1;else if(k==='o'&&n.id!=='SRC'){const ts=Object.values(E).filter(e=>e.s===n.id).map(e=>d[e.t]||1);d[n.id]=Math.max(0,Math.min(...ts)-1)}});
+  const cols={},y={};nodes.forEach(n=>(cols[d[n.id]]=cols[d[n.id]]||[]).push(n));
+  const Wd=$('#netc').clientWidth-140, H=$('#netc').clientHeight-40, ncol=Object.keys(cols).length;
+  Object.keys(cols).map(Number).sort((a,b)=>a-b).forEach(c=>{const col=cols[c];
+    col.forEach(n=>{const ps=(inc[n.id]||[]).filter(p=>y[p]!==undefined);n._b=ps.length?ps.reduce((s,p)=>s+y[p],0)/ps.length:N[n.id].kind==='x'?-N[n.id].val:0});
+    col.sort((a,b)=>a._b-b._b);
+    // sized to the panel: rows fill the height; an over-tall column wraps into sub-columns instead of rescaling the whole chart
+    const per=Math.max(8,Math.floor(H/16)), sub=Math.ceil(col.length/per), rows=Math.ceil(col.length/sub), gap=Math.min(26,H/Math.max(rows,1)), band=Wd/(ncol+1);
+    col.forEach((n,i)=>{const k=Math.floor(i/rows),r=i%rows;y[n.id]=(r-rows/2)*gap;n.x=c*band+k*Math.min(40,band/(sub+1));n.y=y[n.id];
+      n.symbolSize=Math.min(n.symbolSize,sub>1?10:30);n.label.position='right'})});
+}
+function netHowto(nodes){const host=$('#netc')&&$('#netc').parentElement;if(!host)return;if(getComputedStyle(host).position==='static')host.style.position='relative';
+  // top bar: only the threshold; everything else behind "more options"
+  const ctl=$('#net .ctl');if(ctl&&!ctl.dataset.slim){ctl.dataset.slim=1;[...ctl.children].forEach(c=>{if(!c.querySelector||!c.querySelector('#thr'))c.classList.add('netmore')});
+    ctl.insertAdjacentHTML('beforeend','<button id="netmorebtn" style="margin-left:6px">more options ▾</button>');
+    $('#netmorebtn').onclick=()=>{const on=ctl.classList.toggle('showmore');$('#netmorebtn').textContent=on?'fewer options ▴':'more options ▾';drawNet()}}
+  // legend lives in the corner box
+  const leg=$('#legend');if(leg)leg.style.display='none';
+  const seen=new Map();(nodes||[]).forEach(d=>{const n=d._n;if(!n||n.kind!=='w')return;const w=W[d.id];const r=(w&&w.frozen)?'frozen':(n.role||(w&&w.role)||'layering');if(!seen.has(r))seen.set(r,(d.itemStyle||{}).color||ROLEC[r]||EXC.OTHER)});
+  const roles=[...seen].map(([r,c])=>`<span><i style="background:${c}"></i>${r}</span>`).join('');
+  let b=host.querySelector('.asof:not(.netleg)');if(!b){host.insertAdjacentHTML('beforeend','<div class="asof"></div>');b=host.querySelector('.asof:not(.netleg)')}b.style.maxWidth='57%';
+  const X=(typeof CH!=='undefined'&&CH)||D, w=X.windows||[], last=w.length?w[w.length-1].to:'', th=$('#thr')?$('#thr').selectedOptions[0].text:'';
+  let tt=host.querySelector('.nettitle');if(!tt){host.insertAdjacentHTML('beforeend','<div class="nettitle"></div>');tt=host.querySelector('.nettitle')}
+  tt.innerHTML=`<div style="font-size:16px;font-weight:700;color:var(--ink)">Binance Hack — Tron laundering network</div><div style="font-size:12px;color:var(--muted,#777)">attacker wallets moving ${th==='all'?'any amount':th+' or more'} · as of ${last} UTC</div>`;
+  let lg=host.querySelector('.netleg');if(!lg){host.insertAdjacentHTML('beforeend','<div class="netleg asof"></div>');lg=host.querySelector('.netleg')}
+  lg.innerHTML=`<div class="legend">${roles}<span><i style="background:#999;border-radius:2px"></i>exits (named squares)</span></div>`;
+  {const c=$('#net .ctl'), avail=Math.max(400,window.innerHeight-(c?c.getBoundingClientRect().height:40)-182);if(Math.abs($('#netc').clientHeight-avail)>4){$('#netc').style.height=avail+'px';if(net)setTimeout(()=>net.resize(),0)}}
+  b.innerHTML=
+    `<b>How to read:</b> dots are attacker wallets (bigger = more moved), lines are transfers, squares are where funds left. Smaller wallets are grouped into their funder. Click a dot for details.&nbsp; <b style="color:var(--ink)">•</b> &nbsp;${fmt((X.wallets||[]).length)} attacker wallets traced&nbsp; <b style="color:var(--ink)">•</b> &nbsp;Amounts in native units; USD at theft-time prices`}
+function drawNet(){
+  const thr=+$('#thr').value, PLAIN={'layering':1,'service deposit address':1}, vis=a=>{const w=W[a];return w&&(!PLAIN[w.role]||w.thru>=thr)}, memo={};
+  const map=a=>{if(memo[a])return memo[a];let c=a,seen=new Set();while(c&&!vis(c)&&!seen.has(c)){seen.add(c);c=W[c]&&W[c].parent}return memo[a]=(c&&vis(c))?c:'G:unattached'};
+  const N={},E={},node=(id,o)=>N[id]=N[id]||Object.assign({id,val:0,inner:0,members:new Set()},o),edge=(s,t,tr,us,n,kind,ws)=>{const k=s+'|'+t;const e=E[k]=E[k]||{s,t,tr:0,us:0,n:0,kind,w:0};e.tr+=tr;e.us+=us;e.n+=n;e.w=Math.max(e.w,...(ws||[0]))};
+  D.wallets.forEach(w=>{if(!inW([...Object.keys(w.win)].map(Number)))return;const m=map(w.id);const r=m.startsWith('G:')?'layering':W[m].role;node(m,{kind:'w',role:r}).members.add(w.id)});
+  D.links.forEach(([f,t,tr,us,n,ws])=>{if(!inW(ws))return;const a=map(f),b=map(t);if(a===b){node(a,{kind:'w'}).inner+=U(tr,us);return}edge(a,b,tr,us,n,'int',ws)});
+  D.exits.forEach(([f,ep,tr,us,n,ws])=>{if(!inW(ws)||(ep==='X:Swaps (churn)'&&!$('#showswap').checked))return;const cat=ep.startsWith('X:ext:')?'External wallets':ep.slice(2);node(ep,{kind:'x',cat,label:ep.startsWith('X:ext:')?'ext '+ep.slice(6,14)+'…':cat});edge(map(f),ep,tr,us,n,'exit',ws)});
+  if($('#showin').checked)D.inflows.forEach(([f,t,tr,us,n,ws])=>{if(!inW(ws))return;const id=f==='SRC'?'SRC':f==='O:small'?'O:small':'O:'+f;
+    node(id,{kind:'o',label:f==='SRC'?'Binance TDqSquXB':f==='O:small'?'outside (small)':'outside '+f.slice(0,8)+'…'});edge(id,map(t),tr,us,n,f==='SRC'?'root':'in',ws)});
+  Object.values(E).forEach(e=>{const v=U(e.tr,e.us);N[e.s]&&(N[e.s].val+=v);N[e.t]&&(N[e.t].val+=v)});
+  const mx=Math.max(...Object.values(E).map(e=>U(e.tr,e.us)),1);
+  const nodes=Object.values(N).map(n=>{const w=W[n.id],sz=6+Math.sqrt(n.val/1e5)*2.2;
+    const addr=n.id.replace(/^O:|^X:ext:/,''), lb=n.kind==='x'?(n.id.startsWith('X:ext:')?(W[addr]?'attacker wallet':(LBL[addr]&&LBL[addr]!=='External wallets'?LBL[addr]:'External wallet')):n.cat):n.kind==='o'?(n.id==='SRC'?'Binance (Tron)':n.id==='O:small'?'':(LBL[addr]||'')):(n.id.startsWith('G:')?'':(w&&!PLAIN[w.role]?w.role+(w.frozen&&w.role!=='frozen'?' · frozen':''):''));
+    return {id:n.id,name:lb,_addr:n.id.startsWith('G:')||n.id.startsWith('X:')&&!n.id.startsWith('X:ext:')||n.id==='SRC'||n.id==='O:small'?'':addr,symbolSize:Math.min(70,sz),symbol:n.kind==='x'?'roundRect':n.kind==='o'?'diamond':'circle',
+      itemStyle:{color:n.kind==='x'?EXC[n.cat]:n.kind==='o'?(n.id==='SRC'?css('--ink'):EXC['Bitget Wallet Swap Bridge']):(w&&w.frozen?ROLEC.frozen:ROLEC[n.role]||EXC.STRUCT)},
+      label:{show:!!lb,color:css('--ink'),fontSize:10},_n:n}});
+  const edges=Object.values(E).map(e=>{const v=U(e.tr,e.us);return {source:e.s,target:e.t,_e:e,lineStyle:{width:Math.max(.4,6*Math.sqrt(v/mx)),opacity:.55,curveness:.15,
+      color:e.kind==='exit'?(EXC[N[e.t].cat]||'#f59e0b'):e.kind==='in'?EXC['Bitget Wallet Swap Bridge']:e.kind==='root'?css('--ink'):WINC[e.w%WINC.length]}}});
+  if($('#lay').value==='flow')flowLayout(nodes,E,N);
+  curNodes=nodes;$('#netstat').textContent=`${nodes.length} nodes · ${edges.length} merged links · click a node for details (small wallets are merged into their funder)`;
+  net=net||echarts.init($('#netc'));net.clear();
+  net.setOption({tooltip:{formatter:p=>p.dataType==='edge'?`${p.data.source.slice(0,10)} → ${p.data.target.slice(0,10)}<br>${fmt(p.data._e.tr,2)} TRX · ${fmt(p.data._e.us,2)} USDT<br>${p.data._e.n} transfers`:
+      `${p.data.name?'<b>'+p.data.name+'</b><br>':''}${p.data._addr||''}<br>${usd(p.data._n.val)} flow`+(p.data._n.members.size>1?`<br>${p.data._n.members.size} wallets merged`:'')},
+    series:[{type:'graph',top:112,bottom:16,left:16,right:210,layout:$('#lay').value==='flow'?'none':'force',roam:true,draggable:true,data:nodes,links:edges,edgeSymbol:['none','arrow'],edgeSymbolSize:5,
+      force:{repulsion:140,edgeLength:[30,180],gravity:.06,friction:.2},emphasis:{focus:'adjacency',lineStyle:{width:3}},labelLayout:{hideOverlap:true}}]});
+  net.off('click');net.on('click',p=>{if(p.dataType==='node'){side(p.data._n);focusDown(p.data.id,nodes,edges)}else showEdge(p.data._e)});netHowto(nodes);net.getZr().off('click');net.getZr().on('click',ev=>{if(!ev.target)focusDown(null,nodes,edges)});
+}
+function wtable(a){const w=W[a];if(!w)return `<div class="note">${a} is not a ledger wallet.</div>`;
+  const rows=Object.entries(w.win).map(([i,x])=>{const t=x.TRX||[0,0,0,0,''],u=x.USDT||[0,0,0,0,''];const win=D.windows[i];
+    return `<tr><td>${win.from}→${win.to}</td><td class="n">${fmt(t[0],2)}</td><td class="n">${fmt(t[1],2)}</td><td class="n">${fmt(t[2],2)}</td><td class="n"><b>${fmt(t[3],2)}</b></td><td class="n">${fmt(u[3],2)}</td><td class="note">${t[4]}</td></tr>`}).join('');
+  const ins=D.links.filter(l=>l[1]===a).sort((x,y)=>U(y[2],y[3])-U(x[2],x[3])).slice(0,8), outs=D.links.filter(l=>l[0]===a).sort((x,y)=>U(y[2],y[3])-U(x[2],x[3])).slice(0,8), ex=D.exits.filter(l=>l[0]===a);
+  const li=(l,k)=>`<tr><td>${tron(l[k])}</td><td class="n">${fmt(l[2],2)} TRX</td><td class="n">${fmt(l[3],2)} USDT</td><td class="n">${l[4]}</td></tr>`;
+  return `<div>${tron(a)}</div><div class="note">${w.role} · created ${w.created||'?'} · first seen window ${D.windows[w.first].from}→${D.windows[w.first].to} · moved ${usd(w.thru)}</div>
+   <h4>Balance per time window (TRX unless noted)</h4><table><tr><th>window</th><th>in</th><th>out</th><th>fees</th><th>held</th><th>USDT held</th><th>status</th></tr>${rows}</table>
+   <h4>Funded by (attacker wallets)</h4><table>${ins.map(l=>li(l,0)).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Sent to (attacker wallets)</h4><table>${outs.map(l=>li(l,1)).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Exits</h4><table>${ex.map(l=>`<tr><td>${l[1].startsWith('X:ext:')?tron(l[1].slice(6)):l[1].slice(2)}</td><td class="n">${fmt(l[2],2)} TRX</td><td class="n">${fmt(l[3],2)} USDT</td><td class="n">${l[4]}</td></tr>`).join('')||'<tr><td class="note">—</td></tr>'}</table>
+   <h4>Largest transfers</h4><table>${w.tx.map(t=>`<tr><td>${txl(t[1])}</td><td>${t[2].slice(0,10)}…</td><td class="n">${fmt(t[4],2)} ${t[3]}</td></tr>`).join('')}</table>`}
+function openSide(){const w=$('#sidewrap');if(w.hidden){w.hidden=false;if(net)net.resize()}}
+function focusDown(id,nodes,edges){            // click a node: light up everything downstream of it (BFS on merged links); click empty space: reset
+  const keep=new Set(),ke=new Set();
+  if(id){keep.add(id);const q=[id];while(q.length){const x=q.shift();edges.forEach(l=>{if(l.source===x){ke.add(l);if(!keep.has(l.target)){keep.add(l.target);q.push(l.target)}}})}}
+  const on=n=>!id||keep.has(n);
+  net.setOption({series:[{data:nodes.map(n=>Object.assign({},n,{itemStyle:Object.assign({},n.itemStyle,{opacity:on(n.id)?1:.07}),label:Object.assign({},n.label,{show:!!n.label.show&&on(n.id)})})),
+    links:edges.map(l=>Object.assign({},l,{lineStyle:Object.assign({},l.lineStyle,{opacity:!id?.55:ke.has(l)?.9:.03})}))}]});
+  if(!id){$('#netstat').textContent='click a node to follow its money onward · click empty space to show everything';return}
+  const ev=e=>e.u!==undefined?e.u:(typeof U==='function'?U(e.tr,e.us):0),ex={};let tot=0;
+  ke.forEach(l=>{const e=l._e;if(e&&e.kind==='exit'){const t=nodes.find(n=>n.id===l.target),c=(t&&t.name)||l.target.replace(/^X:(ext:)?/,'');ex[c]=(ex[c]||0)+ev(e);tot+=ev(e)}});
+  $('#netstat').textContent=`onward flow: ${keep.size-1} nodes downstream of the selected node · click empty space to show everything`;
+  const rows=Object.entries(ex).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<tr><td>${c}</td><td class="n">${usd(v)}</td></tr>`).join('');
+  $('#side').insertAdjacentHTML('beforeend',`<h4>Onward: exits reached downstream</h4><div class="note">${keep.size-1} downstream nodes · ${usd(tot)} into exits. May include other funds merging further down.</div><table>${rows||'<tr><td class="note">no exits reached — still held</td></tr>'}</table>`)}
+function side(n){openSide();if(n.kind!=='w'){$('#side').innerHTML=`<h3>${n.label}</h3><div class="note">${usd(n.val)} flow in the selected windows.</div>`+(n.id.startsWith('X:ext:')?tron(n.id.slice(6)):n.id.startsWith('O:')&&n.id!=='O:small'?tron(n.id.slice(2)):'');return}
+  const m=[...n.members];$('#side').innerHTML=(m.length>1?`<div class="note">${m.length} wallets merged here · ${usd(n.inner)} circulated between them</div>`:'')+(n.id.startsWith('G:')?'':wtable(n.id))+
+   (m.length>1?`<h4>Merged wallets</h4><div style="max-height:200px;overflow:auto">${m.slice(0,300).map(a=>`<div><a href="#" data-a="${a}" class="addr">${a}</a></div>`).join('')}</div>`:'');
+  $('#side').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#side').innerHTML=wtable(x.dataset.a)})}
+function showEdge(e){openSide();$('#side').innerHTML=`<h3>Link</h3>${tron(e.s.replace(/^O:|^X:ext:/,''))} →<br>${e.t.startsWith('X:')&&!e.t.startsWith('X:ext:')?e.t.slice(2):tron(e.t.replace(/^X:ext:/,''))}<p>${fmt(e.tr,2)} TRX · ${fmt(e.us,2)} USDT · ${e.n} transfers (${e.kind})</p>`}
+$('#find').onchange=()=>{const a=$('#find').value.trim();openSide();if(!W[a]){$('#side').innerHTML=wtable(a);return}$('#side').innerHTML=wtable(a);
+  if(net){const idx=curNodes.findIndex(d=>d.id===a||d._n.members.has(a));if(idx>=0)net.dispatchAction({type:'focusNodeAdjacency',seriesIndex:0,dataIndex:idx})}};
+// ---------- EXITS ----------
+const cats=[...new Set(D.exit_rows.map(r=>r[0]))];$('#cat').innerHTML='<option value="">all</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+function exitsTab(){const c=$('#cat').value,R=D.exit_rows.filter(r=>!c||r[0]===c);
+  $('#exstat').textContent=`${R.length} destinations · ${usd(R.reduce((a,r)=>a+r[3]*PX[r[2]],0))}`;
+  $('#extab').innerHTML='<tr><th>category</th><th>destination</th><th>asset</th><th class="n">amount</th><th class="n">txs</th><th>windows</th><th>detail</th></tr>'+
+   R.slice(0,1500).map(r=>`<tr><td>${r[0]}</td><td>${tron(r[1])}</td><td>${r[2]}</td><td class="n">${fmt(r[3],2)}</td><td class="n">${r[4]}</td><td>${r[5].map(i=>D.windows[i].to).join(', ')}</td><td class="note">${(r[6]||'').slice(0,70)}</td></tr>`).join('')}
+$('#cat').onchange=exitsTab;exitsTab();
+const pt=D.payouts.slice().sort((a,b)=>b.amt*(PX[b.asset]||0)-a.amt*(PX[a.asset]||0)), tot={};pt.forEach(p=>tot[p.asset]=(tot[p.asset]||0)+p.amt);
+$('#paytab').innerHTML=`<tr><th colspan="5">${Object.entries(tot).map(([k,v])=>fmt(v,4)+' '+k).join(' · ')} — ${pt.length} payouts${pt.length?'':' (report not run yet for these windows)'}</th></tr><tr><th>chain</th><th>address</th><th>asset</th><th class="n">amount</th><th>window</th></tr>`+
+  pt.map(p=>{const href=p.chain==='ETH'?`https://etherscan.io/address/${p.to}`:p.chain==='BTC'?`https://mempool.space/address/${p.to}`:'#';
+   return `<tr><td>${p.chain}</td><td><a class="addr" target="_blank" href="${href}">${p.to}</a></td><td>${p.asset}</td><td class="n">${fmt(p.amt,6)}</td><td>${D.windows[p.win].to}</td></tr>`}).join('');
+// ---------- TXS ----------
+const A=D.addr, LBL={}; D.wl.forEach(r=>LBL[A[r[0]]]=r[1]);
+const short=a=>a.length>20?a.slice(0,8)+'…'+a.slice(-4):a, alab=a=>LBL[a]?`<div class="note">${LBL[a]}</div>`:'';
+const pager=(el,n,page,go)=>{const P=Math.ceil(n/200)||1;$(el).innerHTML=`page ${page+1}/${P} `+(page>0?`<button data-p="${page-1}">‹ prev</button>`:'')+(page<P-1?` <button data-p="${page+1}">next ›</button>`:'');$(el).querySelectorAll('button').forEach(b=>b.onclick=()=>go(+b.dataset.p))};
+$('#tc').innerHTML='<option value="">all</option>'+D.cls.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+$('#tw').innerHTML='<option value="">all</option>'+D.windows.map((w,i)=>`<option value="${i}">${w.from}→${w.to}</option>`).join('');
+let tpage=0;function txTab(){const q=$('#tq').value.trim(),c=$('#tc').value,w=$('#tw').value,m=+$('#tm').value;
+  let R=D.txs.filter(t=>(c===''||t[6]==+c)&&(w===''||t[7]==+w)&&t[5]*(t[4]?PX.USDT:PX.TRX)>=m&&(!q||t[0]===q||A[t[2]]===q||A[t[3]]===q));
+  R.sort($('#tsort').value==='v'?(x,y)=>y[5]*(y[4]?1:PX.TRX)-x[5]*(x[4]?1:PX.TRX):(x,y)=>y[1]-x[1]);
+  $('#tstat').textContent=`${fmt(R.length)} of ${fmt(D.txs.length)} ledger transactions`;
+  $('#ttab').innerHTML='<tr><th>time (UTC)</th><th>tx</th><th>from</th><th>to</th><th class="n">amount</th><th>type</th><th>window</th></tr>'+R.slice(tpage*200,tpage*200+200).map(t=>{const f=A[t[2]],to=A[t[3]];
+   return `<tr><td>${new Date(t[1]*1000).toISOString().slice(5,19).replace('T',' ')}</td><td>${txl(t[0])}</td><td><a href="#" class="addr" data-a="${f}">${short(f)}</a>${alab(f)}</td><td><a href="#" class="addr" data-a="${to}">${short(to)}</a>${alab(to)}${t[8]?`<div class="note">${t[8]}</div>`:''}</td><td class="n">${fmt(t[5],2)} ${t[4]?'USDT':'TRX'}</td><td>${D.cls[t[6]]}</td><td>${D.windows[t[7]].to}</td></tr>`}).join('');
+  $('#ttab').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#tq').value=x.dataset.a;tpage=0;txTab()});
+  pager('#tpg',R.length,tpage,p=>{tpage=p;txTab()})}
+['#tq','#tc','#tw','#tm','#tsort'].forEach(s=>$(s).onchange=()=>{tpage=0;txTab()});txTab();
+// ---------- WALLETS ----------
+let wpage=0;function wlTab(){const q=$('#wq').value.trim().toLowerCase(),t=$('#wt').value,so=$('#wsort').value;
+  let R=D.wl.filter(r=>(!t||r[2]===t)&&(!q||A[r[0]].toLowerCase().includes(q)||(r[1]||'').toLowerCase().includes(q)));
+  R.sort(so==='h'?(x,y)=>y[6]-x[6]:so==='n'?(x,y)=>y[8]-x[8]:so==='c'?(x,y)=>(y[3]||'').localeCompare(x[3]||''):(x,y)=>y[5]-x[5]);
+  $('#wstat').textContent=`${fmt(R.length)} of ${fmt(D.wl.length)} addresses`;
+  $('#wtab').innerHTML='<tr><th>address</th><th>label / role</th><th>type</th><th>created</th><th class="n">moved $</th><th class="n">held TRX</th><th class="n">held USDT</th><th class="n">txs</th></tr>'+R.slice(wpage*200,wpage*200+200).map(r=>`<tr data-a="${A[r[0]]}" style="cursor:pointer"><td class="addr">${A[r[0]]}</td><td>${r[1]||'<span class="note">—</span>'}${r[9]?' <b style="color:var(--bad)">FROZEN</b>':''}</td><td>${r[2]}</td><td>${r[3]||''}</td><td class="n">${usd(r[5])}</td><td class="n">${r[6]?fmt(r[6],2):''}</td><td class="n">${r[7]?fmt(r[7],2):''}</td><td class="n">${r[8]}</td></tr>`).join('');
+  $('#wtab').querySelectorAll('tr[data-a]').forEach(tr=>tr.onclick=()=>{const a=tr.dataset.a;$('#wside').innerHTML=(W[a]?wtable(a):`<div>${tron(a)}</div><div class="note">${LBL[a]||'no label'}</div>`)+
+    `<h4>Ledger transactions</h4><table>${D.txs.filter(t=>A[t[2]]===a||A[t[3]]===a).sort((x,y)=>y[1]-x[1]).slice(0,60).map(t=>`<tr><td>${new Date(t[1]*1000).toISOString().slice(5,16).replace('T',' ')}</td><td>${txl(t[0])}</td><td>${A[t[2]]===a?'→ '+short(A[t[3]]):'← '+short(A[t[2]])}</td><td class="n">${fmt(t[5],2)} ${t[4]?'USDT':'TRX'}</td><td class="note">${D.cls[t[6]]}</td></tr>`).join('')}</table>`;
+    $('#wside').querySelectorAll('a[data-a]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#wside').innerHTML=wtable(x.dataset.a)})});
+  pager('#wpg',R.length,wpage,p=>{wpage=p;wlTab()})}
+['#wq','#wt','#wsort'].forEach(s=>$(s).onchange=()=>{wpage=0;wlTab()});wlTab();
+document.addEventListener('click',e=>{const d=$('#wdet');if(d.open&&!d.contains(e.target))d.open=false});
+$('#sclose').onclick=()=>{$('#sidewrap').hidden=true;if(net)net.resize()};
+$('#theme').value=theme;$('#theme').onchange=()=>{const t=$('#theme').value;setTheme(t);try{localStorage.setItem('tronleg-theme',t)}catch(e){}
+  EXC=excFor();ROLEC=rolecFor();WINC=wincFor();drawLegend();drawFlow();if(net)drawNet()};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if($('#theme').value==='auto'){EXC=excFor();ROLEC=rolecFor();WINC=wincFor();drawLegend();drawFlow();if(net)drawNet()}});
+</script></body></html>

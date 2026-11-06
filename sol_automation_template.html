@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eagle Eye — Solana Automation</title>
+<script>/*__ECHARTS__*/</script>
+<style>
+:root{--att:#16a34a;--held:#dc2626;--bot:#7c3aed;--mesh:#a78bfa;--svc:#64748b;--exch:#d97706;--gas:#0284c7;--ops:#38bdf8;--bg:#f7f7f5;--panel:#fff;--ink:#1d1d1f;--mute:#6b6b70;--line:#e3e3e0;--acc:#2f6fdb;--warn:#c2410c;--bad:#b91c1c;--ok:#15803d;--c1:#2f6fdb;--c2:#c2410c;--c3:#7c3aed;--c4:#0f766e;--c5:#a16207}
+:root{color-scheme:light dark}:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark;--att:#4ade80;--held:#f87171;--bot:#a78bfa;--mesh:#c4b5fd;--svc:#94a3b8;--exch:#fbbf24;--gas:#38bdf8;--ops:#7dd3fc;--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80;--c1:#6aa0ff;--c2:#fb923c;--c3:#a78bfa;--c4:#2dd4bf;--c5:#facc15}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--att:#4ade80;--held:#f87171;--bot:#a78bfa;--mesh:#c4b5fd;--svc:#94a3b8;--exch:#fbbf24;--gas:#38bdf8;--ops:#7dd3fc;--bg:#141416;--panel:#1d1d20;--ink:#ececee;--mute:#9a9aa2;--line:#2c2c31;--acc:#6aa0ff;--warn:#fb923c;--bad:#f87171;--ok:#4ade80;--c1:#6aa0ff;--c2:#fb923c;--c3:#a78bfa;--c4:#2dd4bf;--c5:#facc15}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.topbar{padding:6px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--mute);border-bottom:1px solid var(--line)}
+header{padding:14px 18px 10px;border-bottom:1px solid var(--line)}h1{font-size:22px;margin:0}.sub{color:var(--mute);font-size:12px;margin-top:4px}
+main{padding:14px 18px}h3{font-size:14px;margin:2px 0 8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}.kpi b{display:block;font-size:18px}.kpi span{color:var(--mute);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:14px;position:relative}
+.cols{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}.cols>div,.card{min-width:0}@media (max-width:900px){.cols{grid-template-columns:1fr}}
+.ev{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.ev div{border:1px solid var(--line);border-radius:8px;padding:9px 11px}.ev b{display:block;font-size:15px;margin-bottom:2px}.ev span{color:var(--mute);font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mute);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}code{font-size:12px}
+.note{color:var(--mute);font-size:12px}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:-2px 0 4px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.credit{position:absolute;right:18px;bottom:14px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--ink);text-decoration:none}.credit .av{width:60px;height:60px;border-radius:12px;object-fit:cover;image-rendering:pixelated;display:block}.credit .h{display:flex;align-items:center;gap:5px;font-weight:700;font-size:13px;letter-spacing:.1px;line-height:1}.credit .xl{width:12px;height:12px;fill:currentColor}.gcard,.tcard{padding-bottom:104px}.tcard .note{position:absolute;left:12px;bottom:14px;max-width:calc(100% - 130px)}#gr{height:calc(100vh - 250px);min-height:440px;max-height:720px}.gcard .note{position:absolute;left:12px;bottom:14px;max-width:calc(100% - 130px)}
+@media (max-width:600px){main,header{padding-left:16px;padding-right:16px}td,th{white-space:normal}table{display:block;overflow-x:auto}.kpis{grid-template-columns:1fr 1fr}}
+#proof td{white-space:normal}
+</style></head><body>
+<div class="topbar"><label>theme <select id="theme"><option value="auto">auto</option><option value="light">light</option><option value="dark">dark</option></select></label><span id="built"></span></div>
+<header><h1>Binance Hack — Solana laundering automation</h1>
+<div class="sub">A 55-minute wave on 2 Nov. Times are shown as durations from the start of the wave. Built from raw on-chain data, indexed independently. Amounts in native units; USD at theft-time prices, for scale only.</div></header>
+<main>
+<div class="kpis" id="kpis"></div>
+<div class="card tcard"><h3>Timeline — every transaction in the wave</h3>
+  <div class="legend" id="leg"></div><div id="tl" style="height:360px"></div>
+  <div class="note">Each dot is one transaction (size = value). Red ✕ = failed send. Hover for details.</div>
+  <a class="credit" href="https://x.com/SomaXBT" target="_blank" rel="noopener"><img class="av" src="__AVATAR__" alt="SomaXBT"><span class="h"><svg class="xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>SomaXBT</span></a></div>
+<div class="card gcard"><h3 style="display:flex;justify-content:space-between;align-items:center">Fund-flow graph (merged view)<button id="greset" style="font:inherit;font-size:12px;font-weight:400;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:3px 10px;cursor:pointer">Reset layout</button></h3>
+  <div class="legend" id="gleg"></div><div id="gr"></div>
+  <div class="note">Solid arrows = funds (repeated transactions merged into one arrow). Dashed = gas funding. Drag nodes to arrange them (remembered in this browser). Hover to highlight links; double-click to open in the explorer.</div>  <a class="credit" href="https://x.com/SomaXBT" target="_blank" rel="noopener"><img class="av" src="__AVATAR__" alt="SomaXBT"><span class="h"><svg class="xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>SomaXBT</span></a></div>
+<div class="card"><h3>Timing proof — why a person could not do this</h3><div style="overflow-x:auto"><table id="proof"></table></div></div>
+<div class="cols">
+  <div class="card"><h3>Why this is automated</h3><div class="ev" id="ev"></div></div>
+  <div class="card"><h3>Key steps</h3><div style="overflow-x:auto"><table id="steps"></table></div></div>
+</div>
+<div class="cols">
+  <div class="card"><h3>Still held from this wave</h3><table id="held"></table></div>
+  <div class="card"><h3>Addresses to watch</h3><table id="keys"></table></div>
+</div>
+</main>
+<script>
+const D=/*__DATA__*/null, $=s=>document.querySelector(s), css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const sh=a=>a.slice(0,8)+'…'+a.slice(-4), sol=a=>`<a href="https://solscan.io/account/${a}" target="_blank" rel="noopener"><code>${sh(a)}</code></a>`;
+const rel=ms=>{const t=Math.round((ms/1000)-D.t0),m=Math.floor(Math.abs(t)/60),x=Math.abs(t)%60;return (t<0?'−':'+')+(m?m+' min '+String(x).padStart(2,'0')+' s':x+' s')};
+const fmt=(n,d=0)=>Number(n).toLocaleString('en-US',{maximumFractionDigits:d}), utc=ms=>new Date(ms).toISOString().slice(11,19);
+$('#built').textContent='built '+D.built;
+const LANE_C=()=>({'Operator swaps':css('--att'),'Bot sprayer':css('--bot'),'Mesh wallets':css('--mesh'),'Gas funder':css('--gas'),'Ops wallet':css('--ops')});
+let tl,gr;
+function draw(){
+  const E=D.evi, C=LANE_C(), ink=css('--ink'), mute=css('--mute'), line=css('--line');
+  $('#kpis').innerHTML=[['13,633 SOL','left the main pot'],['10,018 SOL → USDC → SOL','round trip in ~20 min'],[`${E.spray_sends} bot sends in ${E.spray_s} s`,'one wallet spraying USDC'],[`${E.gas_wallets} wallets`,`gas-funded ~${E.gas_lead_min} min before use`]]
+    .map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#leg').innerHTML=D.lanes.map(l=>`<span><i style="background:${C[l]}"></i>${l}</span>`).join('')+`<span><i style="background:${css('--held')}"></i>failed send</span>`;
+  const mx=Math.max(...D.events.map(e=>e[3]));
+  tl=tl||echarts.init($('#tl')); tl.setOption({backgroundColor:'transparent',textStyle:{color:ink},grid:{left:110,right:20,top:28,bottom:44},
+    tooltip:{trigger:'item',formatter:p=>{const e=p.data.e;return `<b>${e[6]}</b><br>${rel(e[1])} from start · block ${fmt(e[2])}<br>wallet <code>${sh(e[5])}</code><br>≈ $${fmt(e[3])}${e[8]?'<br>priority fee '+fmt(e[8]):''}`}},
+    xAxis:{type:'value',name:'minutes from start of wave',nameLocation:'middle',nameGap:24,nameTextStyle:{color:mute},min:25,max:56,axisLabel:{color:mute,formatter:v=>'+'+v+' min'},axisLine:{lineStyle:{color:line}},splitLine:{show:false}},
+    yAxis:{type:'category',data:D.lanes.slice().reverse(),axisLabel:{color:ink},axisLine:{lineStyle:{color:line}},splitLine:{show:true,lineStyle:{color:line}}},
+    series:[{type:'scatter',data:D.events.map(e=>({value:[(e[1]/1000-D.t0)/60,e[0]],e,symbol:e[4]?'path://M2,2L10,10M10,2L2,10':'circle',symbolSize:e[4]?10:Math.max(e[0]==='Ops wallet'||e[0]==='Gas funder'?9:7,4+16*Math.sqrt(e[3]/mx)),
+      itemStyle:{color:e[4]?css('--held'):C[e[0]],opacity:e[0]==='Ops wallet'||e[0]==='Gas funder'?.95:.8,borderColor:e[4]?css('--held'):'transparent'}})),
+      markLine:{silent:true,symbol:'none',label:{color:mute,fontSize:11,formatter:'{b}',position:'end'},lineStyle:{color:line,type:'dashed'},
+        data:[{name:'10k SOL → USDC',xAxis:(1793594996-D.t0)/60},{name:'spray starts',xAxis:(1793595163-D.t0)/60},{name:'Jupiter Lend',xAxis:(1793596019-D.t0)/60}]}}]},true);
+  const bg=css('--panel'), G=D.graph, CC=[css('--att'),css('--held'),css('--bot'),css('--mesh'),css('--svc'),css('--exch'),css('--gas')];
+  const HEX='path://M50,0L93.3,25L93.3,75L50,100L6.7,75L6.7,25Z';
+  const PUMP='path://M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z';
+  let saved={}; try{saved=JSON.parse(localStorage.getItem('ee-sol-layout')||'{}')}catch(e){}
+  const NODES=G.nodes.map(n=>({...n,x:(saved[n.id]||[n.x,n.y])[0],y:(saved[n.id]||[n.x,n.y])[1]}));
+  const bx=G.nodes.map(n=>n.x),by=G.nodes.map(n=>n.y),A0=[Math.min(...bx)-40,Math.min(...by)-30],A1=[Math.max(...bx)+40,Math.max(...by)+60];
+  gr=gr||echarts.init($('#gr'));
+  // uniform scale: pick margins so the node box keeps its aspect ratio inside the chart (round circles at any window size)
+  const W=gr.getWidth(),H=gr.getHeight(),xs=[A0[0],A1[0]],ys=[A0[1],A1[1]],bw=Math.max(...xs)-Math.min(...xs)||1,bh=Math.max(...ys)-Math.min(...ys)||1;
+  const aw=W-150,ah=H-110,sc=Math.min(aw/bw,ah/bh),gx0=Math.min(...xs),gy0=Math.min(...ys),px=(W-bw*sc)/2,py=(H-bh*sc)/2+16;
+  const toPx=(x,y)=>[px+(x-gx0)*sc,py+(y-gy0)*sc], toData=(X,Y)=>[Math.round((X-px)/sc+gx0),Math.round((Y-py)/sc+gy0)];
+  gr.off('dblclick'); gr.on('dblclick',p=>{if(p.dataType==='node'&&p.data.addr)window.open('https://solscan.io/account/'+p.data.addr,'_blank')});
+  const save=()=>{const d=gr.getModel().getSeriesByIndex(0).getData(),o={};
+    for(let k=0;k<d.count();k++){const l=d.getItemLayout(k),id=d.getId(k);if(l&&!id.startsWith('_a'))o[id]=[Math.round(l[0]),Math.round(l[1])]}try{localStorage.setItem('ee-sol-layout',JSON.stringify(o))}catch(e){}};
+  gr.off('mouseup'); gr.on('mouseup',p=>{if(p.dataType==='node')setTimeout(save,50)});
+  $('#greset').onclick=()=>{try{localStorage.removeItem('ee-sol-layout')}catch(e){};gr.clear();draw()};
+  gr.setOption({backgroundColor:'transparent',color:CC,legend:{data:D.cats.map((c,k)=>({name:c,icon:k===4?HEX:k===6?PUMP:'circle'})),top:0,textStyle:{color:ink},itemWidth:13,itemHeight:13},
+    tooltip:{formatter:p=>p.dataType==='node'?`<b>${p.data.name}</b><br>${p.data.sub}${p.data.addr?'<br><code>'+p.data.addr+'</code>':''}`:p.data.label},
+    series:[{type:'graph',layout:'none',left:px,right:W-px-bw*sc,top:py,bottom:H-py-bh*sc,roam:'scale',draggable:true,nodeScaleRatio:0,
+      categories:D.cats.map((c,k)=>({name:c,itemStyle:{color:CC[k]}})),edgeSymbol:['none','arrow'],edgeSymbolSize:8,
+      label:{show:true,position:'bottom',distance:6,color:ink,fontSize:11,formatter:p=>`{n|${p.data.name}}\n{s|${p.data.sub}}`,rich:{n:{fontWeight:700,fontSize:12,color:ink},s:{fontSize:10,color:mute}}},
+      itemStyle:{borderColor:bg,borderWidth:2},
+      data:NODES.map(n=>{const svc=n.category===4,gas=n.category===6,held=n.category===1;
+        return {...n,id:n.id,x:n.x,y:n.y,symbol:svc?HEX:gas?PUMP:'circle',symbolKeepAspect:true,symbolSize:svc?n.symbolSize*1.15:gas?n.symbolSize*1.2:n.symbolSize,
+          itemStyle:held?{borderColor:bg,borderWidth:2.5,shadowBlur:10,shadowColor:css('--held')}:gas?{borderWidth:0}:undefined}}).concat([A0,A1].map((a,k)=>({id:'_a'+k,name:'_a'+k,x:a[0],y:a[1],symbolSize:0,draggable:false,silent:true,label:{show:false},tooltip:{show:false}}))),
+      links:G.edges.map(e=>({source:e.source,target:e.target,label:e.label,lineStyle:{color:e.gas?css('--gas'):mute,width:e.gas?1.2:2,type:e.gas?'dashed':'solid',curveness:e.curve||0,opacity:.8}})),
+      edgeLabel:{show:true,position:'middle',distance:4,fontSize:10.5,color:ink,formatter:p=>p.data.label},emphasis:{focus:'adjacency',lineStyle:{width:3}}}]},true);
+  $('#proof').innerHTML='<tr><th>what</th><th>measured</th><th>what it shows</th></tr>'+D.proof.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="note">${r[2]}</td></tr>`).join('');
+  $('#ev').innerHTML=[
+    [`${E.spray_le2} of ${E.spray_sends-1} gaps ≤ 2 slots`,`Bot sprayer sent ${E.spray_sends} transactions in ${E.spray_s} s; ${E.spray_same_slot} pairs landed in the same slot — sent in parallel.`],
+    [`${E.spray_fail} failures → auto refill`,'A burst of failed sends (out of fee money), a 0.5 SOL top-up, then the bot resumed by itself.'],
+    [`${E.gas_wallets} wallets pre-funded`,`One gas wallet funded the mesh a median ~${E.gas_lead_min} min before each wallet was used — built before the swap.`],
+    [`${E.mesh_wallets} mesh wallets`,'USDC split into random whole-dollar amounts ($321–$3,843) and passed between fresh wallets with random delays.'],
+    ['Same priority fees across wallets',D.evi.fees.map(f=>`${fmt(f[0])} on ${f[1]} wallets`).join(' · ')+' — one toolset signing for many wallets.'],
+    ['Receipt-token hop','SOL deposited to Jupiter Lend, the receipt moved to a fresh wallet and redeemed there — breaks the link between deposit and withdrawal.']]
+    .map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+  let prev=null; const dur=t=>t<60?Math.round(t)+' s':Math.floor(t/60)+' min '+String(Math.round(t%60)).padStart(2,'0')+' s';
+  $('#steps').innerHTML='<tr><th>from start</th><th class="n">gap</th><th>wallet</th><th>step</th></tr>'+D.steps.map(s=>{const d=prev?(s[1]-prev)/1000:0;prev=s[1];
+    return `<tr><td>${rel(s[1])}</td><td class="n">${d?'+'+dur(d):''}</td><td>${sol(s[2])}</td><td><a href="https://solscan.io/tx/${s[6]}" target="_blank" rel="noopener">${s[3]}</a></td></tr>`}).join('');
+  $('#held').innerHTML='<tr><th>wallet</th><th class="n">SOL</th></tr>'+D.held.map(h=>`<tr><td>${sol(h[1])}</td><td class="n">${fmt(h[2],2)}</td></tr>`).join('');
+  $('#keys').innerHTML='<tr><th>role</th><th>address</th></tr>'+D.keys.map(k=>`<tr><td>${k[0]}</td><td>${sol(k[1])}</td></tr>`).join('');
+}
+const th=$('#theme'); try{th.value=localStorage.getItem('ee-theme')||'auto'}catch(e){}
+function applyTheme(){const v=th.value;if(v==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',v);try{localStorage.setItem('ee-theme',v)}catch(e){};draw()}
+th.onchange=applyTheme; matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw); window.addEventListener('resize',()=>{tl&&tl.resize();if(gr){gr.resize();draw()}}); applyTheme();
+</script></body></html>

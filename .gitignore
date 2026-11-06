@@ -1,0 +1,12 @@
+# Whitelist: code only. Data, ledgers, pages, notes, drafts and keys never enter git.
+*
+!*/
+!.gitignore
+!*.py
+!*.sh
+!*_template.html
+__pycache__/
+raw/graph/rollback-*/
+.env*
+*.db*
+*.bak*
